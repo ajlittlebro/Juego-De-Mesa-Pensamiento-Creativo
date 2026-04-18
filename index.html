@@ -1,1479 +1,1998 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Olimpiada del Pensamiento Fimeño</title>
-<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-<style>
-/* ═══════════════════════════════════════════════════════════════
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olimpiada del Pensamiento Fimeño</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Roboto+Condensed:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
    ROOT VARIABLES & RESET
 ═══════════════════════════════════════════════════════════════ */
-:root {
-  --bg-deep: #1a3a2a;
-  --bg-map: #4a7c4e;
-  --water: #2e6b9e;
-  --water-light: #4a9fd4;
-  --land: #6aaa5e;
-  --land-dark: #3d7a42;
-  --parchment: #f5e6c8;
-  --parchment-dark: #d4b896;
-  --title-red: #8b1a1a;
-  --gold: #c8a83c;
-  --gold-light: #f0d060;
-  --white: #ffffff;
-  --sidebar-bg: rgba(20, 50, 30, 0.88);
-  --sidebar-border: rgba(200, 168, 60, 0.6);
-  --cell-bg: rgba(255,255,255,0.92);
-  --cell-shadow: 0 3px 12px rgba(0,0,0,0.4);
-  --cat-math: #3a7bd5;
-  --cat-sci: #e07830;
-  --cat-art: #2ea855;
-  --cat-hist: #cc3333;
-  --cat-logic: #8844bb;
-  --cat-start: #2c9a2c;
-  --cat-end: #c8a83c;
-  --font-title: 'Cinzel Decorative', serif;
-  --font-body: 'Cinzel', serif;
-  --font-num: 'Roboto Condensed', sans-serif;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg-deep);
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  user-select: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MAIN LAYOUT
-═══════════════════════════════════════════════════════════════ */
-#game-container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MAP AREA
-═══════════════════════════════════════════════════════════════ */
-#map-area {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse 70% 60% at 55% 50%, #5a9e60 0%, #3d7a42 35%, #2e6b9e 65%, #1a4a7a 100%);
-}
-
-/* Animated water ripple */
-#map-area::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 40% 30% at 80% 30%, rgba(74,159,212,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 35% 25% at 20% 70%, rgba(74,159,212,0.2) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 20% at 50% 80%, rgba(74,159,212,0.15) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  animation: waterShimmer 6s ease-in-out infinite alternate;
-}
-
-@keyframes waterShimmer {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
-}
-
-/* Terrain texture overlay */
-#map-area::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle 80px at 15% 20%, rgba(100,160,80,0.5) 0%, transparent 60%),
-    radial-gradient(circle 60px at 85% 15%, rgba(90,150,70,0.5) 0%, transparent 60%),
-    radial-gradient(circle 70px at 75% 80%, rgba(80,140,60,0.4) 0%, transparent 60%),
-    radial-gradient(circle 50px at 30% 85%, rgba(90,150,70,0.4) 0%, transparent 55%),
-    radial-gradient(circle 45px at 60% 50%, rgba(46,107,158,0.3) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-#map-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   BOARD TITLE
-═══════════════════════════════════════════════════════════════ */
-#board-title {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  text-align: center;
-  pointer-events: none;
-}
-
-#board-title h1 {
-  font-family: var(--font-title);
-  font-size: clamp(1.2rem, 3vw, 2.2rem);
-  color: var(--title-red);
-  text-shadow:
-    2px 2px 0 #4a0000,
-    0 0 20px rgba(139,26,26,0.6),
-    3px 3px 8px rgba(0,0,0,0.8);
-  letter-spacing: 2px;
-  white-space: nowrap;
-  -webkit-text-stroke: 0.5px #2a0000;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FLOATING LANDMARKS
-═══════════════════════════════════════════════════════════════ */
-.landmark {
-  position: absolute;
-  z-index: 3;
-  text-align: center;
-  pointer-events: none;
-  color: var(--parchment-dark);
-  font-family: var(--font-body);
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.6);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.landmark-icon {
-  font-size: 1.6rem;
-  display: block;
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.7));
-  margin-bottom: 2px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CELLS
-═══════════════════════════════════════════════════════════════ */
-.cell {
-  position: absolute;
-  width: 52px;
-  height: 36px;
-  background: var(--cell-bg);
-  border-radius: 10px;
-  box-shadow: var(--cell-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translate(-50%, -50%);
-  border: 1.5px solid rgba(255,255,255,0.6);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
-}
-
-.cell:hover {
-  transform: translate(-50%, -50%) scale(1.05);
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9);
-  z-index: 11;
-}
-
-.cell-number {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-num);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  flex-shrink: 0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-
-.cell.cat-mat .cell-number { background: var(--cat-math); }
-.cell.cat-cie .cell-number { background: var(--cat-sci); }
-.cell.cat-art .cell-number { background: var(--cat-art); }
-.cell.cat-his .cell-number { background: var(--cat-hist); }
-.cell.cat-log .cell-number { background: var(--cat-logic); }
-.cell.cat-start .cell-number { background: var(--cat-start); }
-.cell.cat-end   .cell-number { background: var(--cat-end); }
-
-.cell.start-cell {
-  background: linear-gradient(135deg, #1a3a1a, #2c6a2c);
-  border: 2px solid #4aaa4a;
-  box-shadow: 0 0 15px rgba(74,170,74,0.5), var(--cell-shadow);
-}
-.cell.end-cell {
-  background: linear-gradient(135deg, #3a2800, #7a5a00);
-  border: 2px solid var(--gold);
-  box-shadow: 0 0 20px rgba(200,168,60,0.6), var(--cell-shadow);
-  animation: endPulse 2s ease-in-out infinite;
-}
-
-@keyframes endPulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(200,168,60,0.6), var(--cell-shadow); }
-  50% { box-shadow: 0 0 35px rgba(200,168,60,0.9), 0 0 60px rgba(200,168,60,0.4), var(--cell-shadow); }
-}
-
-.cell-label {
-  font-family: var(--font-num);
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: var(--parchment);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-  text-align: center;
-  padding: 2px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PLAYER TOKENS
-═══════════════════════════════════════════════════════════════ */
-.player-token {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 15px currentColor;
-  z-index: 20;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 900;
-  color: white;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  font-family: var(--font-num);
-}
-
-.player-token.active-token {
-  animation: tokenPulse 1.2s ease-in-out infinite;
-  z-index: 21;
-}
-
-@keyframes tokenPulse {
-  0%, 100% {
-    box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 0 0 currentColor, 0 0 15px currentColor;
-  }
-  50% {
-    box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 0 8px transparent, 0 0 25px currentColor;
-  }
-}
-
-.player-token.shake {
-  animation: tokenShake 0.5s ease-in-out;
-}
-
-@keyframes tokenShake {
-  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-  20% { transform: translate(calc(-50% - 5px), -50%) rotate(-5deg); }
-  40% { transform: translate(calc(-50% + 5px), -50%) rotate(5deg); }
-  60% { transform: translate(calc(-50% - 4px), -50%) rotate(-3deg); }
-  80% { transform: translate(calc(-50% + 4px), -50%) rotate(3deg); }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════════════════════════════ */
-#sidebar {
-  width: 160px;
-  min-width: 160px;
-  background: var(--sidebar-bg);
-  border-right: 2px solid var(--sidebar-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 8px;
-  gap: 8px;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.5);
-}
-
-#sidebar-title {
-  font-family: var(--font-title);
-  font-size: 0.8rem;
-  color: var(--gold-light);
-  text-shadow: 0 0 10px rgba(200,168,60,0.5);
-  letter-spacing: 1px;
-  text-align: center;
-  border-bottom: 1px solid var(--sidebar-border);
-  padding-bottom: 6px;
-  width: 100%;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PLAYER CARDS
-═══════════════════════════════════════════════════════════════ */
-.player-card {
-  width: 100%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 10px;
-  padding: 7px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.3s ease;
-}
-
-.player-card.active-card {
-  background: rgba(200,168,60,0.15);
-  border-color: var(--gold);
-  box-shadow: 0 0 15px rgba(200,168,60,0.3), inset 0 0 10px rgba(200,168,60,0.1);
-}
-
-.player-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 2.5px solid white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.5);
-  position: relative;
-}
-
-.player-card.active-card .player-avatar::after {
-  content: '';
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2px solid var(--gold);
-  animation: avatarRing 1.5s ease-in-out infinite;
-}
-
-@keyframes avatarRing {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.6; }
-}
-
-.player-name {
-  font-family: var(--font-num);
-  font-size: 0.7rem;
-  color: var(--white);
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-
-.player-score-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.player-score {
-  font-family: var(--font-num);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--gold-light);
-  text-shadow: 0 0 8px rgba(200,168,60,0.5);
-}
-
-.score-label {
-  font-family: var(--font-num);
-  font-size: 0.55rem;
-  color: rgba(255,255,255,0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.player-pos {
-  font-family: var(--font-num);
-  font-size: 0.6rem;
-  color: rgba(255,255,255,0.5);
-}
-
-/* Progress bar */
-.progress-bar-wrap {
-  width: 100%;
-  height: 5px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.6s ease;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DICE & BEAR BUTTON
-═══════════════════════════════════════════════════════════════ */
-#bear-zone {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-#bear-btn {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #5a8a40, #2a5a1a);
-  border: 3px solid var(--gold);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 0 20px rgba(90,138,64,0.6), 0 0 40px rgba(90,138,64,0.3), 0 5px 15px rgba(0,0,0,0.5);
-  transition: all 0.2s ease;
-  animation: bearGlow 2s ease-in-out infinite alternate;
-  position: relative;
-  overflow: visible;
-}
-
-#bear-btn::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 2px solid var(--gold-light);
-  opacity: 0.5;
-  animation: bearRing 2s ease-in-out infinite;
-}
-
-@keyframes bearGlow {
-  from { box-shadow: 0 0 20px rgba(90,138,64,0.6), 0 0 40px rgba(90,138,64,0.3), 0 5px 15px rgba(0,0,0,0.5); }
-  to { box-shadow: 0 0 30px rgba(90,138,64,0.9), 0 0 60px rgba(90,138,64,0.5), 0 5px 15px rgba(0,0,0,0.5); }
-}
-
-@keyframes bearRing {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.08); opacity: 0.2; }
-}
-
-#bear-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 40px rgba(90,138,64,1), 0 0 80px rgba(90,138,64,0.6), 0 8px 20px rgba(0,0,0,0.6);
-}
-
-#bear-btn:active { transform: scale(0.96); }
-#bear-btn.disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
-
-#bear-label {
-  font-family: var(--font-num);
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--parchment);
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-  text-align: center;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  background: rgba(0,0,0,0.5);
-  padding: 3px 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(200,168,60,0.4);
-}
-
-/* Dice display */
-#dice-display {
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(circle at 35% 35%, #f5f5f5, #c8c8c8);
-  border-radius: 12px;
-  border: 2px solid rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  box-shadow: 3px 3px 8px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(0,0,0,0.2), inset 1px 1px 3px rgba(255,255,255,0.8);
-  font-family: var(--font-num);
-  font-weight: 900;
-  color: #111;
-  transition: all 0.1s ease;
-}
-
-#dice-display.rolling {
-  animation: diceRoll 0.6s ease-in-out;
-}
-
-@keyframes diceRoll {
-  0% { transform: rotateX(0deg) rotateY(0deg); }
-  25% { transform: rotateX(180deg) rotateY(90deg) scale(1.15); }
-  50% { transform: rotateX(360deg) rotateY(180deg) scale(0.9); }
-  75% { transform: rotateX(540deg) rotateY(270deg) scale(1.1); }
-  100% { transform: rotateX(720deg) rotateY(360deg) scale(1); }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   BOTTOM CONTROLS
-═══════════════════════════════════════════════════════════════ */
-#bottom-controls {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  gap: 12px;
-}
-
-.ctrl-btn {
-  font-family: var(--font-num);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 9px 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 2.5px solid;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
-
-.ctrl-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-.ctrl-btn:active { transform: translateY(0); }
-
-#btn-instructivo {
-  background: #1a1a1a;
-  color: #f5e6c8;
-  border-color: #f5e6c8;
-}
-
-#btn-inicio {
-  background: #1a3a1a;
-  color: #6aff6a;
-  border-color: #4aaa4a;
-}
-
-.sidebar-util-btn {
-  width: 100%;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  color: var(--parchment);
-  font-family: var(--font-num);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 6px 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-transform: uppercase;
-}
-
-.sidebar-util-btn:hover {
-  background: rgba(200,168,60,0.2);
-  border-color: var(--gold);
-  transform: translateY(-1px);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MODALS
-═══════════════════════════════════════════════════════════════ */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.modal-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.modal-box {
-  background: linear-gradient(160deg, #0d2a1a, #1a3a2a, #0d1f30);
-  border: 2px solid var(--gold);
-  border-radius: 18px;
-  padding: 28px;
-  max-width: 480px;
-  width: 92%;
-  box-shadow: 0 0 40px rgba(200,168,60,0.3), 0 20px 60px rgba(0,0,0,0.8);
-  transform: scale(0.8);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.modal-overlay.open .modal-box { transform: scale(1); }
-
-.modal-box::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-.modal-category {
-  font-family: var(--font-title);
-  font-size: 0.85rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cat-badge {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.modal-question {
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  color: var(--parchment);
-  line-height: 1.5;
-  margin-bottom: 18px;
-  font-weight: 600;
-}
-
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.option-btn {
-  background: rgba(255,255,255,0.07);
-  border: 1.5px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  color: var(--parchment);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  line-height: 1.3;
-}
-
-.option-btn:hover {
-  background: rgba(200,168,60,0.2);
-  border-color: var(--gold);
-  transform: translateY(-2px);
-}
-
-.option-btn.correct { background: rgba(46,168,85,0.3); border-color: #2ea855; color: #6afa8a; }
-.option-btn.wrong { background: rgba(200,50,50,0.3); border-color: #cc3333; color: #ff8888; }
-.option-btn:disabled { cursor: default; }
-
-.open-answer-wrap {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-#open-answer-input {
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  color: var(--parchment);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-#open-answer-input:focus { border-color: var(--gold); }
-
-#open-answer-submit {
-  background: var(--gold);
-  border: none;
-  border-radius: 10px;
-  color: #1a0800;
-  font-family: var(--font-num);
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 10px 18px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-#open-answer-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
-
-.modal-feedback {
-  font-family: var(--font-num);
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-align: center;
-  min-height: 24px;
-  letter-spacing: 0.5px;
-}
-
-.feedback-correct { color: #6aff8a; }
-.feedback-wrong { color: #ff7070; }
-
-/* Setup modal */
-#setup-modal .modal-box { max-width: 420px; }
-
-.setup-title {
-  font-family: var(--font-title);
-  font-size: 1.3rem;
-  color: var(--gold-light);
-  text-align: center;
-  margin-bottom: 20px;
-  text-shadow: 0 0 15px rgba(200,168,60,0.5);
-}
-
-.player-count-wrap {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.count-btn {
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,255,255,0.2);
-  color: var(--parchment);
-  font-family: var(--font-num);
-  font-size: 1.4rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.count-btn.selected {
-  background: rgba(200,168,60,0.3);
-  border-color: var(--gold);
-  color: var(--gold-light);
-  box-shadow: 0 0 15px rgba(200,168,60,0.4);
-}
-
-.player-names-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.player-name-input {
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  color: var(--parchment);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  padding: 9px 14px;
-  outline: none;
-  transition: border-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.player-name-input input {
-  background: transparent;
-  border: none;
-  color: var(--parchment);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  outline: none;
-  flex: 1;
-}
-
-.player-color-dot {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.5);
-}
-
-#start-game-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #2c6a2c, #1a8a1a);
-  border: 2px solid #4aaa4a;
-  border-radius: 12px;
-  color: white;
-  font-family: var(--font-title);
-  font-size: 1rem;
-  padding: 14px;
-  cursor: pointer;
-  letter-spacing: 2px;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 20px rgba(74,170,74,0.3);
-}
-
-#start-game-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(74,170,74,0.6), 0 8px 20px rgba(0,0,0,0.4);
-}
-
-/* Victory modal */
-#victory-modal .modal-box {
-  max-width: 420px;
-  text-align: center;
-}
-
-.victory-title {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  color: var(--gold-light);
-  text-shadow: 0 0 20px rgba(200,168,60,0.8), 0 0 40px rgba(200,168,60,0.4);
-  margin-bottom: 8px;
-  animation: victoryPulse 1.5s ease-in-out infinite alternate;
-}
-
-@keyframes victoryPulse {
-  from { text-shadow: 0 0 20px rgba(200,168,60,0.8), 0 0 40px rgba(200,168,60,0.4); }
-  to { text-shadow: 0 0 40px rgba(200,168,60,1), 0 0 80px rgba(200,168,60,0.7); }
-}
-
-.victory-emoji { font-size: 4rem; margin: 10px 0; }
-.victory-name { font-family: var(--font-body); font-size: 1.1rem; color: var(--parchment); margin-bottom: 6px; }
-.victory-score { font-family: var(--font-num); font-size: 2rem; font-weight: 700; color: var(--gold-light); }
-
-/* Instructions modal */
-#instructions-modal .modal-box { max-width: 500px; max-height: 80vh; overflow-y: auto; }
-
-.instructions-title {
-  font-family: var(--font-title);
-  font-size: 1.1rem;
-  color: var(--gold-light);
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-.instructions-body {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  color: var(--parchment);
-  line-height: 1.7;
-}
-
-.instructions-body h4 {
-  color: var(--gold-light);
-  margin-top: 14px;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-.cat-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.cat-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.78rem;
-}
-
-.legend-dot {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════════════════ */
-#toast-container {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 300;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.toast {
-  font-family: var(--font-num);
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  padding: 10px 22px;
-  border-radius: 30px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  animation: toastIn 0.3s ease-out, toastOut 0.4s 1.8s ease-in forwards;
-  white-space: nowrap;
-}
-
-.toast.success { background: #1a5a2a; border: 2px solid #4aaa4a; color: #8affaa; }
-.toast.error { background: #5a1a1a; border: 2px solid #aa4a4a; color: #ffaaaa; }
-.toast.info { background: #1a3a5a; border: 2px solid #4a7aaa; color: #aaccff; }
-
-@keyframes toastIn {
-  from { opacity: 0; transform: translateY(-10px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes toastOut {
-  to { opacity: 0; transform: translateY(-10px) scale(0.9); }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   STREAK CELEBRATION
-═══════════════════════════════════════════════════════════════ */
-#streak-banner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  z-index: 250;
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  color: var(--gold-light);
-  text-shadow: 0 0 30px rgba(200,168,60,0.8);
-  background: rgba(0,0,0,0.85);
-  padding: 16px 36px;
-  border-radius: 16px;
-  border: 2px solid var(--gold);
-  pointer-events: none;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-  opacity: 0;
-  white-space: nowrap;
-}
-
-#streak-banner.show {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   TURN INDICATOR
-═══════════════════════════════════════════════════════════════ */
-#turn-indicator {
-  position: absolute;
-  bottom: 55px;
-  right: 14px;
-  z-index: 100;
-  font-family: var(--font-num);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--parchment);
-  background: rgba(0,0,0,0.6);
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid rgba(200,168,60,0.4);
-  text-align: center;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
-
-/* Close button */
-.modal-close-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
-  width: 30px; height: 30px;
-  color: var(--parchment);
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.modal-close-btn:hover { background: rgba(200,50,50,0.4); border-color: #cc3333; }
-
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  #sidebar { width: 120px; min-width: 120px; }
-  .player-avatar { width: 32px; height: 32px; font-size: 1rem; }
-  #bear-btn { width: 58px; height: 58px; font-size: 1.6rem; }
-  #board-title h1 { font-size: 1rem; }
-}
-</style>
-</head>
-<body>
-
-<div id="game-container">
-
-  <!-- SIDEBAR -->
-  <aside id="sidebar" role="complementary" aria-label="Panel de Jugadores">
-    <div id="sidebar-title">⚔ Jugadores</div>
-    <div id="players-list"></div>
-    <div style="flex:1"></div>
-    <!-- Utility buttons -->
-    <button class="sidebar-util-btn" id="btn-sound" title="Activar/Desactivar sonido">
-      <i class="fas fa-volume-up" id="sound-icon"></i> Sonido
-    </button>
-    <button class="sidebar-util-btn" id="btn-restart-side" title="Reiniciar partida">
-      <i class="fas fa-redo"></i> Reiniciar
-    </button>
-  </aside>
-
-  <!-- MAP AREA -->
-  <div id="map-area" role="main" aria-label="Tablero de juego">
-    <canvas id="map-canvas"></canvas>
-
-    <!-- Title -->
-    <div id="board-title">
-      <h1>Olimpiada del Pensamiento Fimeño</h1>
-    </div>
-
-    <!-- Landmarks (decorative) -->
-    <div class="landmark" id="lm-edificio1" style="left:16%;top:14%">
-      <span class="landmark-icon">🏰</span>Edificio 1
-    </div>
-    <div class="landmark" id="lm-edificio2" style="left:42%;top:10%">
-      <span class="landmark-icon">🏛</span>Edificio 2
-    </div>
-    <div class="landmark" id="lm-edificio3" style="left:62%;top:10%">
-      <span class="landmark-icon">🏯</span>Edificio 3
-    </div>
-    <div class="landmark" id="lm-edificio4" style="left:74%;top:48%">
-      <span class="landmark-icon">🏟</span>Edificio 4
-    </div>
-    <div class="landmark" id="lm-eloso" style="left:64%;top:54%">
-      <span class="landmark-icon">🐻</span>El Oso
-    </div>
-    <div class="landmark" id="lm-biblioteca" style="left:28%;top:55%">
-      <span class="landmark-icon">📚</span>Edificio 9
-    </div>
-    <div class="landmark" id="lm-cafeteria" style="left:38%;top:72%">
-      <span class="landmark-icon">☕</span>Cafetería
-    </div>
-    <div class="landmark" id="lm-cidlt" style="left:58%;top:80%">
-      <span class="landmark-icon">🖥</span>Cidlt
-    </div>
-    <div class="landmark" id="lm-poli" style="left:76%;top:64%">
-      <span class="landmark-icon">🎓</span>El Poli
-    </div>
-    <div class="landmark" id="lm-final" style="left:22%;top:75%">
-      <span class="landmark-icon">🏁</span>Final
-    </div>
-
-    <!-- Cells will be injected here -->
-    <div id="cells-container" style="position:absolute;inset:0;z-index:10;pointer-events:none;"></div>
-
-    <!-- Player tokens will be injected here -->
-    <div id="tokens-container" style="position:absolute;inset:0;z-index:20;pointer-events:none;"></div>
-
-    <!-- Bear Dado button -->
-    <div id="bear-zone">
-      <button id="bear-btn" aria-label="Tira el Oso Dado" title="¡Tira el Oso Dado!">🐻</button>
-      <div id="dice-display">🎲</div>
-      <div id="bear-label">¡Tira el Oso Dado!</div>
-    </div>
-
-    <!-- Turn indicator -->
-    <div id="turn-indicator">Turno: —</div>
-
-    <!-- Bottom controls -->
-    <div id="bottom-controls">
-      <button class="ctrl-btn" id="btn-instructivo" aria-label="Ver instructivo">
-        <i class="fas fa-plus"></i> Instructivo
-      </button>
-      <button class="ctrl-btn" id="btn-inicio" aria-label="Ir al inicio">
-        <i class="fas fa-plus"></i> Inicio
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST CONTAINER -->
-<div id="toast-container" aria-live="polite"></div>
-
-<!-- STREAK BANNER -->
-<div id="streak-banner">🔥 ¡Racha de 3! ¡Eres imparable!</div>
-
-<!-- SETUP MODAL -->
-<div class="modal-overlay" id="setup-modal" role="dialog" aria-modal="true" aria-label="Configuración del juego">
-  <div class="modal-box">
-    <div class="setup-title">⚔ Olimpiada del Pensamiento Fimeño</div>
-    <p style="font-family:var(--font-body);font-size:0.8rem;color:rgba(245,230,200,0.7);text-align:center;margin-bottom:16px;">Selecciona el número de jugadores</p>
-    <div class="player-count-wrap">
-      <button class="count-btn selected" data-count="2">2</button>
-      <button class="count-btn" data-count="3">3</button>
-      <button class="count-btn" data-count="4">4</button>
-    </div>
-    <div class="player-names-grid" id="player-names-grid"></div>
-    <button id="start-game-btn">⚔ Comenzar Aventura ⚔</button>
-  </div>
-</div>
-
-<!-- QUESTION MODAL -->
-<div class="modal-overlay" id="question-modal" role="dialog" aria-modal="true" aria-label="Pregunta">
-  <div class="modal-box">
-    <div class="modal-category" id="q-category"></div>
-    <div class="modal-question" id="q-text"></div>
-    <div class="options-grid" id="q-options"></div>
-    <div class="open-answer-wrap" id="q-open" style="display:none">
-      <input type="text" id="open-answer-input" placeholder="Escribe tu respuesta..." autocomplete="off">
-      <button id="open-answer-submit">Enviar</button>
-    </div>
-    <div class="modal-feedback" id="q-feedback"></div>
-  </div>
-</div>
-
-<!-- VICTORY MODAL -->
-<div class="modal-overlay" id="victory-modal" role="dialog" aria-modal="true" aria-label="Victoria">
-  <div class="modal-box">
-    <div class="victory-emoji">🏆</div>
-    <div class="victory-title">¡VICTORIA!</div>
-    <div class="victory-name" id="victory-name"></div>
-    <div class="victory-score" id="victory-score"></div>
-    <button class="ctrl-btn" id="btn-victory-restart" style="margin-top:18px;width:100%;justify-content:center;background:#1a5a1a;border-color:#4aaa4a;color:white;">
-      <i class="fas fa-redo"></i> Jugar de Nuevo
-    </button>
-  </div>
-</div>
-
-<!-- INSTRUCTIONS MODAL -->
-<div class="modal-overlay" id="instructions-modal" role="dialog" aria-modal="true" aria-label="Instrucciones">
-  <div class="modal-box">
-    <button class="modal-close-btn" id="close-instructions">✕</button>
-    <div class="instructions-title">📜 Instructivo del Juego</div>
-    <div class="instructions-body">
-      <h4>🎯 Objetivo</h4>
-      <p>Sé el primer jugador en llegar a la casilla 46 (Meta). Responde preguntas correctamente para acumular puntos y ventajas.</p>
-      <h4>🎲 Turno</h4>
-      <p>Pulsa el botón 🐻 para lanzar el dado (1-6). Tu ficha avanzará casilla por casilla. Si te pasas de la Meta, pierdes el turno.</p>
-      <h4>❓ Preguntas</h4>
-      <p>Al caer en una casilla de color, responde la pregunta. <b style="color:#6aff8a">Acierto:</b> +1 punto, te quedas. <b style="color:#ff7070">Error:</b> retrocedes 1 casilla.</p>
-      <h4>🔥 Racha</h4>
-      <p>3 aciertos consecutivos desatan una celebración especial. ¡Ponle presión al rival!</p>
-      <h4>🗺 Categorías</h4>
-      <div class="cat-legend">
-        <div class="cat-legend-item"><div class="legend-dot" style="background:var(--cat-math)"></div> Matemáticas</div>
-        <div class="cat-legend-item"><div class="legend-dot" style="background:var(--cat-sci)"></div> Ciencias</div>
-        <div class="cat-legend-item"><div class="legend-dot" style="background:var(--cat-art)"></div> Arte</div>
-        <div class="cat-legend-item"><div class="legend-dot" style="background:var(--cat-hist)"></div> Historia</div>
-        <div class="cat-legend-item"><div class="legend-dot" style="background:var(--cat-logic)"></div> Lógica</div>
-      </div>
-      <h4>💾 Guardado automático</h4>
-      <p>Tu partida se guarda automáticamente en cada turno. Si cierras el navegador, puedes retomar desde donde dejaste.</p>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ═══════════════════════════════════════════════════════════════
-   BANCO DE PREGUNTAS
-═══════════════════════════════════════════════════════════════ */
-const bancoPreguntas = [
-  // MATEMÁTICAS
-  { id:1, categoria:"Matemáticas", habilidad:"Analítico", tipo:"multiple",
-    pregunta:"Si un pastel se divide en 8 partes y comes 3, ¿qué fracción queda?",
-    opciones:["3/8","5/8","1/2","3/4"], correcta:"5/8" },
-  { id:2, categoria:"Matemáticas", habilidad:"Analítico", tipo:"multiple",
-    pregunta:"¿Cuál es el siguiente número en la serie: 2, 6, 12, 20...?",
-    opciones:["24","30","36","42"], correcta:"30" },
-  { id:3, categoria:"Matemáticas", habilidad:"Analítico", tipo:"multiple",
-    pregunta:"Si el 20% de un número es 40, ¿cuál es el número?",
-    opciones:["100","150","200","800"], correcta:"200" },
-  // CIENCIAS
-  { id:4, categoria:"Ciencias", habilidad:"Crítico", tipo:"multiple",
-    pregunta:"¿El hielo flota en el agua porque es más liviano?",
-    opciones:["Verdadero","Falso. Es menos denso."], correcta:"Falso. Es menos denso." },
-  { id:5, categoria:"Ciencias", habilidad:"Crítico", tipo:"multiple",
-    pregunta:"¿Qué gas absorben las plantas durante la fotosíntesis?",
-    opciones:["Oxígeno","Nitrógeno","Dióxido de Carbono","Hidrógeno"], correcta:"Dióxido de Carbono" },
-  { id:6, categoria:"Ciencias", habilidad:"Crítico", tipo:"multiple",
-    pregunta:"¿Cuál es el planeta conocido como el 'Planeta Rojo'?",
-    opciones:["Venus","Júpiter","Marte","Saturno"], correcta:"Marte" },
-  // ARTE
-  { id:7, categoria:"Arte", habilidad:"Creativo", tipo:"abierta",
-    pregunta:"Nombra una canción famosa que tenga un color en su título (Ej: 'Yellow' de Coldplay).",
-    correctas:["yellow","blue","red","black","white","purple","green","amarillo","rojo","azul","negro","blanco","verde","pink","rosa","grey","gray","gris","golden","dorado","silver","plata","orange","naranja","violet","violeta","indigo","índigo"] },
-  { id:8, categoria:"Arte", habilidad:"Creativo", tipo:"multiple",
-    pregunta:"¿Quién pintó la Mona Lisa?",
-    opciones:["Van Gogh","Picasso","Da Vinci","Dalí"], correcta:"Da Vinci" },
-  { id:9, categoria:"Arte", habilidad:"Creativo", tipo:"multiple",
-    pregunta:"¿Cómo se llama el arte japonés de doblar papel?",
-    opciones:["Ikebana","Haiku","Origami","Bonsái"], correcta:"Origami" },
-  // HISTORIA
-  { id:10, categoria:"Historia", habilidad:"Práctico", tipo:"multiple",
-    pregunta:"¿En qué siglo ocurrió la Revolución Mexicana?",
-    opciones:["Siglo XVIII","Siglo XIX","Siglo XX","Siglo XXI"], correcta:"Siglo XX" },
-  { id:11, categoria:"Historia", habilidad:"Práctico", tipo:"multiple",
-    pregunta:"¿En qué año cayó el Muro de Berlín?",
-    opciones:["1989","1991","1985","1995"], correcta:"1989" },
-  { id:12, categoria:"Historia", habilidad:"Práctico", tipo:"multiple",
-    pregunta:"¿Quién descubrió América en 1492?",
-    opciones:["Magallanes","Cortés","Colón","Pizarro"], correcta:"Colón" },
-  // LÓGICA
-  { id:13, categoria:"Lógica", habilidad:"Metacognición", tipo:"multiple",
-    pregunta:"Pedro es más alto que Juan, y Juan es más alto que Luis. ¿Quién es el más bajo?",
-    opciones:["Pedro","Juan","Luis","Ninguno"], correcta:"Luis" },
-  { id:14, categoria:"Lógica", habilidad:"Metacognición", tipo:"multiple",
-    pregunta:"Algunos meses tienen 31 días, otros 30. ¿Cuántos tienen 28 días?",
-    opciones:["1","Todos","Ninguno","2"], correcta:"Todos" },
-  { id:15, categoria:"Lógica", habilidad:"Metacognición", tipo:"multiple",
-    pregunta:"¿Qué pesa más, un kilo de plumas o un kilo de plomo?",
-    opciones:["Las plumas","El plomo","Pesan lo mismo","Depende del tamaño"], correcta:"Pesan lo mismo" }
-];
-
-/* ═══════════════════════════════════════════════════════════════
-   PATH COORDINATES (46 cells, serpentine map path)
-   Percentage-based so they scale with the viewport.
-   Format: { x: %, y: % }
-═══════════════════════════════════════════════════════════════ */
-const camino = [
-  // Row 1 — left to right (cells 1-9)
-  {x:19,y:21},{x:27,y:21},{x:34,y:21},{x:41,y:21},{x:50,y:19},{x:58,y:19},{x:65,y:21},{x:73,y:21},{x:81,y:21},
-  // Right column going down (10-12)
-  {x:84,y:30},{x:84,y:40},{x:81,y:50},
-  // Inner spiral turn right side (13-20)
-  {x:75,y:52},{x:68,y:52},{x:61,y:50},{x:57,y:46},{x:55,y:41},{x:57,y:36},{x:62,y:33},{x:69,y:33},
-  // Top inner row right-to-left (21)
-  {x:76,y:30},
-  // Inner right going down (22-25)
-  {x:70,y:40},{x:63,y:42},{x:56,y:44},{x:50,y:47},
-  // Inner turn bottom (26-28)
-  {x:44,y:49},{x:40,y:53},{x:45,y:59},
-  // Bottom inner row right-to-left (29-33)
-  {x:52,y:62},{x:59,y:62},{x:67,y:63},{x:74,y:64},{x:82,y:65},
-  // Right bottom going down (34-36)
-  {x:82,y:73},{x:73,y:77},{x:63,y:79},
-  // Bottom row right-to-left (37-41)
-  {x:54,y:80},{x:44,y:81},{x:35,y:80},{x:28,y:74},{x:29,y:65},
-  // Left spiral going up (42-44)
-  {x:36,y:60},{x:37,y:50},{x:31,y:44},
-  // Far left going down to FINAL (45-46)
-  {x:25,y:58},{x:23,y:70}
-];
-
-/* Category assignment for each cell (0-indexed) */
-const categorias = [
-  'start',  // 0 → Casilla 1
-  'mat','cie','art','his','log',   // 1-5
-  'mat','cie','art',               // 6-8
-  'his','log','mat',               // 9-11
-  'cie','art','his','log','mat','cie','art','his', // 12-19
-  'log',                           // 20
-  'mat','cie','art','his','log',   // 21-25
-  'mat','cie','art',               // 26-28
-  'his','log','mat','cie','art',   // 29-33
-  'his','log','mat',               // 34-36
-  'cie','art','his','log','mat',   // 37-41
-  'cie','art','his',               // 42-44
-  'log','end'                      // 45-46 → but array is 0-45 = cells 1-46
-];
-
-const catColors = {
-  start:'#2c9a2c', end:'#c8a83c',
-  mat:'#3a7bd5', cie:'#e07830', art:'#2ea855',
-  his:'#cc3333', log:'#8844bb'
-};
-
-const catLabels = {
-  start:'INICIO', end:'META',
-  mat:'Matemáticas', cie:'Ciencias', art:'Arte',
-  his:'Historia', log:'Lógica'
-};
-
-const catEmojis = {
-  mat:'➕', cie:'🔬', art:'🎨', his:'📜', log:'🧩'
-};
-
-/* Player config */
-const playerColors = ['#e05050','#50a0e0','#e0a030','#a050e0'];
-const playerEmojis = ['🦁','🦊','🐯','🐺'];
-const defaultNames = ['Jugador 1','Jugador 2','Jugador 3','Jugador 4'];
-
-/* ═══════════════════════════════════════════════════════════════
-   GAME STATE
-═══════════════════════════════════════════════════════════════ */
-let state = {
-  jugadores: [],
-  turnoActual: 0,
-  juegoActivo: false,
-  sonidoActivado: true,
-  modalAbierto: false
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   WEB AUDIO API
-═══════════════════════════════════════════════════════════════ */
-let audioCtx = null;
-
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playTone(freq, type, duration, gain=0.3) {
-  if (!state.sonidoActivado) return;
-  try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(freq * 0.8, ctx.currentTime + duration);
-    gainNode.gain.setValueAtTime(gain, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
-  } catch(e){}
-}
-
-function playBip()     { playTone(440, 'sine', 0.08, 0.2); }
-function playSuccess() {
-  [523, 659, 784, 1047].forEach((f,i) => setTimeout(() => playTone(f,'triangle',0.15,0.3), i*100));
-}
-function playError()   { playTone(150, 'sawtooth', 0.4, 0.25); }
-function playDice()    { [300,400,350,500].forEach((f,i) => setTimeout(() => playTone(f,'square',0.05,0.15), i*80)); }
-
-/* ═══════════════════════════════════════════════════════════════
-   CANVAS — draw the path lines
-═══════════════════════════════════════════════════════════════ */
-function drawMapCanvas() {
-  const canvas = document.getElementById('map-canvas');
-  const W = canvas.offsetWidth;
-  const H = canvas.offsetHeight;
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
-
-  const pts = camino.map(p => ({ x: W * p.x / 100, y: H * p.y / 100 }));
-
-  // Draw road / path
-  ctx.save();
-  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-  ctx.lineWidth = 38;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(255,255,255,0.08)';
-  ctx.shadowBlur = 10;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    const xc = (pts[i-1].x + pts[i].x) / 2;
-    const yc = (pts[i-1].y + pts[i].y) / 2;
-    ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, xc, yc);
-  }
-  ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
-  ctx.stroke();
-
-  // White inner road
-  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-  ctx.lineWidth = 26;
-  ctx.shadowBlur = 0;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    const xc = (pts[i-1].x + pts[i].x) / 2;
-    const yc = (pts[i-1].y + pts[i].y) / 2;
-    ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, xc, yc);
-  }
-  ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RENDERIZADO — CELLS
-═══════════════════════════════════════════════════════════════ */
-function renderCells() {
-  const container = document.getElementById('cells-container');
-  container.innerHTML = '';
-  const W = document.getElementById('map-area').offsetWidth;
-  const H = document.getElementById('map-area').offsetHeight;
-
-  camino.forEach((pt, i) => {
-    const cell = document.createElement('div');
-    const cat = categorias[i] || 'mat';
-    cell.className = `cell cat-${cat}`;
-    cell.id = `cell-${i}`;
-    cell.style.left = `${W * pt.x / 100}px`;
-    cell.style.top  = `${H * pt.y / 100}px`;
-    cell.style.pointerEvents = 'auto';
-
-    if (cat === 'start' || cat === 'end') {
-      cell.classList.add(cat === 'start' ? 'start-cell' : 'end-cell');
-      const lbl = document.createElement('div');
-      lbl.className = 'cell-label';
-      lbl.textContent = cat === 'start' ? '⭐ INICIO' : '🏆 META';
-      cell.appendChild(lbl);
-    } else {
-      const num = document.createElement('div');
-      num.className = 'cell-number';
-      num.style.background = catColors[cat];
-      num.textContent = i + 1;
-      cell.appendChild(num);
+    :root {
+      --bg-deep: #1a3a2a;
+      --bg-map: #4a7c4e;
+      --water: #2e6b9e;
+      --water-light: #4a9fd4;
+      --land: #6aaa5e;
+      --land-dark: #3d7a42;
+      --parchment: #f5e6c8;
+      --parchment-dark: #d4b896;
+      --title-red: #8b1a1a;
+      --gold: #c8a83c;
+      --gold-light: #f0d060;
+      --white: #ffffff;
+      --sidebar-bg: rgba(20, 50, 30, 0.88);
+      --sidebar-border: rgba(200, 168, 60, 0.6);
+      --cell-bg: rgba(255, 255, 255, 0.92);
+      --cell-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+      --cat-math: #3a7bd5;
+      --cat-sci: #e07830;
+      --cat-art: #2ea855;
+      --cat-hist: #cc3333;
+      --cat-logic: #8844bb;
+      --cat-start: #2c9a2c;
+      --cat-end: #c8a83c;
+      --font-title: 'Cinzel Decorative', serif;
+      --font-body: 'Cinzel', serif;
+      --font-num: 'Roboto Condensed', sans-serif;
     }
 
-    container.appendChild(cell);
-  });
-}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* ═══════════════════════════════════════════════════════════════
-   RENDERIZADO — PLAYER CARDS in sidebar
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   MAIN LAYOUT
 ═══════════════════════════════════════════════════════════════ */
-function renderPlayerCards() {
-  const list = document.getElementById('players-list');
-  list.innerHTML = '';
-  state.jugadores.forEach((p, i) => {
-    const card = document.createElement('div');
-    card.className = `player-card ${i === state.turnoActual ? 'active-card' : ''}`;
-    card.id = `player-card-${i}`;
+    #game-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+    }
 
-    const progress = Math.round((p.posicion / (camino.length - 1)) * 100);
+    /* ═══════════════════════════════════════════════════════════════
+   MAP AREA
+═══════════════════════════════════════════════════════════════ */
+    #map-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 55% 50%, #5a9e60 0%, #3d7a42 35%, #2e6b9e 65%, #1a4a7a 100%);
+    }
 
-    card.innerHTML = `
+    /* Animated water ripple */
+    #map-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 40% 30% at 80% 30%, rgba(74, 159, 212, 0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 35% 25% at 20% 70%, rgba(74, 159, 212, 0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 20% at 50% 80%, rgba(74, 159, 212, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: waterShimmer 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes waterShimmer {
+      from {
+        opacity: 0.7;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Terrain texture overlay */
+    #map-area::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle 80px at 15% 20%, rgba(100, 160, 80, 0.5) 0%, transparent 60%),
+        radial-gradient(circle 60px at 85% 15%, rgba(90, 150, 70, 0.5) 0%, transparent 60%),
+        radial-gradient(circle 70px at 75% 80%, rgba(80, 140, 60, 0.4) 0%, transparent 60%),
+        radial-gradient(circle 50px at 30% 85%, rgba(90, 150, 70, 0.4) 0%, transparent 55%),
+        radial-gradient(circle 45px at 60% 50%, rgba(46, 107, 158, 0.3) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #map-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   BOARD TITLE
+═══════════════════════════════════════════════════════════════ */
+    #board-title {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #board-title h1 {
+      font-family: var(--font-title);
+      font-size: clamp(1.2rem, 3vw, 2.2rem);
+      color: var(--title-red);
+      text-shadow:
+        2px 2px 0 #4a0000,
+        0 0 20px rgba(139, 26, 26, 0.6),
+        3px 3px 8px rgba(0, 0, 0, 0.8);
+      letter-spacing: 2px;
+      white-space: nowrap;
+      -webkit-text-stroke: 0.5px #2a0000;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   FLOATING LANDMARKS
+═══════════════════════════════════════════════════════════════ */
+    .landmark {
+      position: absolute;
+      z-index: 3;
+      text-align: center;
+      pointer-events: none;
+      color: var(--parchment-dark);
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.6);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .landmark-icon {
+      font-size: 1.6rem;
+      display: block;
+      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.7));
+      margin-bottom: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   CELLS
+═══════════════════════════════════════════════════════════════ */
+    .cell {
+      position: absolute;
+      width: 52px;
+      height: 36px;
+      background: var(--cell-bg);
+      border-radius: 10px;
+      box-shadow: var(--cell-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+
+    .cell:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      z-index: 11;
+    }
+
+    .cell-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    .cell.cat-mat .cell-number {
+      background: var(--cat-math);
+    }
+
+    .cell.cat-cie .cell-number {
+      background: var(--cat-sci);
+    }
+
+    .cell.cat-art .cell-number {
+      background: var(--cat-art);
+    }
+
+    .cell.cat-his .cell-number {
+      background: var(--cat-hist);
+    }
+
+    .cell.cat-log .cell-number {
+      background: var(--cat-logic);
+    }
+
+    .cell.cat-start .cell-number {
+      background: var(--cat-start);
+    }
+
+    .cell.cat-end .cell-number {
+      background: var(--cat-end);
+    }
+
+    .cell.start-cell {
+      background: linear-gradient(135deg, #1a3a1a, #2c6a2c);
+      border: 2px solid #4aaa4a;
+      box-shadow: 0 0 15px rgba(74, 170, 74, 0.5), var(--cell-shadow);
+    }
+
+    .cell.end-cell {
+      background: linear-gradient(135deg, #3a2800, #7a5a00);
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 20px rgba(200, 168, 60, 0.6), var(--cell-shadow);
+      animation: endPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes endPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(200, 168, 60, 0.6), var(--cell-shadow);
+      }
+
+      50% {
+        box-shadow: 0 0 35px rgba(200, 168, 60, 0.9), 0 0 60px rgba(200, 168, 60, 0.4), var(--cell-shadow);
+      }
+    }
+
+    .cell-label {
+      font-family: var(--font-num);
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: var(--parchment);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      padding: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   PLAYER TOKENS
+═══════════════════════════════════════════════════════════════ */
+    .player-token {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 15px currentColor;
+      z-index: 20;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      font-family: var(--font-num);
+    }
+
+    .player-token.active-token {
+      animation: tokenPulse 1.2s ease-in-out infinite;
+      z-index: 21;
+    }
+
+    @keyframes tokenPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 0 0 currentColor, 0 0 15px currentColor;
+      }
+
+      50% {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 0 8px transparent, 0 0 25px currentColor;
+      }
+    }
+
+    .player-token.shake {
+      animation: tokenShake 0.5s ease-in-out;
+    }
+
+    @keyframes tokenShake {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      20% {
+        transform: translate(calc(-50% - 5px), -50%) rotate(-5deg);
+      }
+
+      40% {
+        transform: translate(calc(-50% + 5px), -50%) rotate(5deg);
+      }
+
+      60% {
+        transform: translate(calc(-50% - 4px), -50%) rotate(-3deg);
+      }
+
+      80% {
+        transform: translate(calc(-50% + 4px), -50%) rotate(3deg);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════════════ */
+    #sidebar {
+      width: 160px;
+      min-width: 160px;
+      background: var(--sidebar-bg);
+      border-right: 2px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 8px;
+      gap: 8px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #sidebar-title {
+      font-family: var(--font-title);
+      font-size: 0.8rem;
+      color: var(--gold-light);
+      text-shadow: 0 0 10px rgba(200, 168, 60, 0.5);
+      letter-spacing: 1px;
+      text-align: center;
+      border-bottom: 1px solid var(--sidebar-border);
+      padding-bottom: 6px;
+      width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   PLAYER CARDS
+═══════════════════════════════════════════════════════════════ */
+    .player-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 7px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .player-card.active-card {
+      background: rgba(200, 168, 60, 0.15);
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(200, 168, 60, 0.3), inset 0 0 10px rgba(200, 168, 60, 0.1);
+    }
+
+    .player-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2.5px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .player-card.active-card .player-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      animation: avatarRing 1.5s ease-in-out infinite;
+    }
+
+    @keyframes avatarRing {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+      }
+    }
+
+    .player-name {
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      color: var(--white);
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    .player-score-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .player-score {
+      font-family: var(--font-num);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 8px rgba(200, 168, 60, 0.5);
+    }
+
+    .score-label {
+      font-family: var(--font-num);
+      font-size: 0.55rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .player-pos {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   DICE & BEAR BUTTON
+═══════════════════════════════════════════════════════════════ */
+    #bear-zone {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #bear-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #5a8a40, #2a5a1a);
+      border: 3px solid var(--gold);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 0 20px rgba(90, 138, 64, 0.6), 0 0 40px rgba(90, 138, 64, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s ease;
+      animation: bearGlow 2s ease-in-out infinite alternate;
+      position: relative;
+      overflow: visible;
+    }
+
+    #bear-btn::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-light);
+      opacity: 0.5;
+      animation: bearRing 2s ease-in-out infinite;
+    }
+
+    @keyframes bearGlow {
+      from {
+        box-shadow: 0 0 20px rgba(90, 138, 64, 0.6), 0 0 40px rgba(90, 138, 64, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      to {
+        box-shadow: 0 0 30px rgba(90, 138, 64, 0.9), 0 0 60px rgba(90, 138, 64, 0.5), 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    @keyframes bearRing {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.2;
+      }
+    }
+
+    #bear-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 40px rgba(90, 138, 64, 1), 0 0 80px rgba(90, 138, 64, 0.6), 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    #bear-btn:active {
+      transform: scale(0.96);
+    }
+
+    #bear-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    #bear-label {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--parchment);
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+      text-align: center;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 3px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(200, 168, 60, 0.4);
+    }
+
+    /* Dice display */
+    #dice-display {
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle at 35% 35%, #f5f5f5, #c8c8c8);
+      border-radius: 12px;
+      border: 2px solid rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5), inset -2px -2px 5px rgba(0, 0, 0, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 0.8);
+      font-family: var(--font-num);
+      font-weight: 900;
+      color: #111;
+      transition: all 0.1s ease;
+    }
+
+    #dice-display.rolling {
+      animation: diceRoll 0.6s ease-in-out;
+    }
+
+    @keyframes diceRoll {
+      0% {
+        transform: rotateX(0deg) rotateY(0deg);
+      }
+
+      25% {
+        transform: rotateX(180deg) rotateY(90deg) scale(1.15);
+      }
+
+      50% {
+        transform: rotateX(360deg) rotateY(180deg) scale(0.9);
+      }
+
+      75% {
+        transform: rotateX(540deg) rotateY(270deg) scale(1.1);
+      }
+
+      100% {
+        transform: rotateX(720deg) rotateY(360deg) scale(1);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   BOTTOM CONTROLS
+═══════════════════════════════════════════════════════════════ */
+    #bottom-controls {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+    }
+
+    .ctrl-btn {
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 9px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2.5px solid;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .ctrl-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .ctrl-btn:active {
+      transform: translateY(0);
+    }
+
+    #btn-instructivo {
+      background: #1a1a1a;
+      color: #f5e6c8;
+      border-color: #f5e6c8;
+    }
+
+    #btn-inicio {
+      background: #1a3a1a;
+      color: #6aff6a;
+      border-color: #4aaa4a;
+    }
+
+    .sidebar-util-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: var(--parchment);
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-util-btn:hover {
+      background: rgba(200, 168, 60, 0.2);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: linear-gradient(160deg, #0d2a1a, #1a3a2a, #0d1f30);
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      padding: 28px;
+      max-width: 480px;
+      width: 92%;
+      box-shadow: 0 0 40px rgba(200, 168, 60, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+      transform: scale(0.8);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .modal-category {
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cat-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .modal-question {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      color: var(--parchment);
+      line-height: 1.5;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      line-height: 1.3;
+    }
+
+    .option-btn:hover {
+      background: rgba(200, 168, 60, 0.2);
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .option-btn.correct {
+      background: rgba(46, 168, 85, 0.3);
+      border-color: #2ea855;
+      color: #6afa8a;
+    }
+
+    .option-btn.wrong {
+      background: rgba(200, 50, 50, 0.3);
+      border-color: #cc3333;
+      color: #ff8888;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .open-answer-wrap {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    #open-answer-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    #open-answer-input:focus {
+      border-color: var(--gold);
+    }
+
+    #open-answer-submit {
+      background: var(--gold);
+      border: none;
+      border-radius: 10px;
+      color: #1a0800;
+      font-family: var(--font-num);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #open-answer-submit:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
+    .modal-feedback {
+      font-family: var(--font-num);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      min-height: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .feedback-correct {
+      color: #6aff8a;
+    }
+
+    .feedback-wrong {
+      color: #ff7070;
+    }
+
+    /* Setup modal */
+    #setup-modal .modal-box {
+      max-width: 420px;
+    }
+
+    .setup-title {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      color: var(--gold-light);
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px rgba(200, 168, 60, 0.5);
+    }
+
+    .player-count-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .count-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: var(--parchment);
+      font-family: var(--font-num);
+      font-size: 1.4rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .count-btn.selected {
+      background: rgba(200, 168, 60, 0.3);
+      border-color: var(--gold);
+      color: var(--gold-light);
+      box-shadow: 0 0 15px rgba(200, 168, 60, 0.4);
+    }
+
+    .player-names-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .player-name-input {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 9px 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-name-input input {
+      background: transparent;
+      border: none;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      flex: 1;
+    }
+
+    .player-color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    #start-game-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #2c6a2c, #1a8a1a);
+      border: 2px solid #4aaa4a;
+      border-radius: 12px;
+      color: white;
+      font-family: var(--font-title);
+      font-size: 1rem;
+      padding: 14px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px rgba(74, 170, 74, 0.3);
+    }
+
+    #start-game-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(74, 170, 74, 0.6), 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Victory modal */
+    #victory-modal .modal-box {
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .victory-title {
+      font-family: var(--font-title);
+      font-size: 1.6rem;
+      color: var(--gold-light);
+      text-shadow: 0 0 20px rgba(200, 168, 60, 0.8), 0 0 40px rgba(200, 168, 60, 0.4);
+      margin-bottom: 8px;
+      animation: victoryPulse 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes victoryPulse {
+      from {
+        text-shadow: 0 0 20px rgba(200, 168, 60, 0.8), 0 0 40px rgba(200, 168, 60, 0.4);
+      }
+
+      to {
+        text-shadow: 0 0 40px rgba(200, 168, 60, 1), 0 0 80px rgba(200, 168, 60, 0.7);
+      }
+    }
+
+    .victory-emoji {
+      font-size: 4rem;
+      margin: 10px 0;
+    }
+
+    .victory-name {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--parchment);
+      margin-bottom: 6px;
+    }
+
+    .victory-score {
+      font-family: var(--font-num);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    /* Instructions modal */
+    #instructions-modal .modal-box {
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .instructions-title {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .instructions-body {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--parchment);
+      line-height: 1.7;
+    }
+
+    .instructions-body h4 {
+      color: var(--gold-light);
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .cat-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .cat-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      font-family: var(--font-num);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      padding: 10px 22px;
+      border-radius: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      animation: toastIn 0.3s ease-out, toastOut 0.4s 1.8s ease-in forwards;
+      white-space: nowrap;
+    }
+
+    .toast.success {
+      background: #1a5a2a;
+      border: 2px solid #4aaa4a;
+      color: #8affaa;
+    }
+
+    .toast.error {
+      background: #5a1a1a;
+      border: 2px solid #aa4a4a;
+      color: #ffaaaa;
+    }
+
+    .toast.info {
+      background: #1a3a5a;
+      border: 2px solid #4a7aaa;
+      color: #aaccff;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.9);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   STREAK CELEBRATION
+═══════════════════════════════════════════════════════════════ */
+    #streak-banner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 250;
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--gold-light);
+      text-shadow: 0 0 30px rgba(200, 168, 60, 0.8);
+      background: rgba(0, 0, 0, 0.85);
+      padding: 16px 36px;
+      border-radius: 16px;
+      border: 2px solid var(--gold);
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+      opacity: 0;
+      white-space: nowrap;
+    }
+
+    #streak-banner.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   TURN INDICATOR
+═══════════════════════════════════════════════════════════════ */
+    #turn-indicator {
+      position: absolute;
+      bottom: 55px;
+      right: 14px;
+      z-index: 100;
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--parchment);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(200, 168, 60, 0.4);
+      text-align: center;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    /* Close button */
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      color: var(--parchment);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(200, 50, 50, 0.4);
+      border-color: #cc3333;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      #sidebar {
+        width: 120px;
+        min-width: 120px;
+      }
+
+      .player-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+
+      #bear-btn {
+        width: 58px;
+        height: 58px;
+        font-size: 1.6rem;
+      }
+
+      #board-title h1 {
+        font-size: 1rem;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+   PARTICLE CANVAS (background layer)
+═══════════════════════════════════════════════════════════════ */
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Ensure game container sits above particles */
+    #game-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Enhanced map area with deeper, richer gradient */
+    #map-area {
+      background:
+        radial-gradient(ellipse 70% 60% at 55% 50%, #4a8e56 0%, #2d6038 35%, #1e5280 65%, #0d2e55 100%);
+    }
+
+    /* Animated aurora overlay on map */
+    #map-aurora {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 0;
+    }
+
+    .aurora-band {
+      position: absolute;
+      width: 200%;
+      left: -50%;
+      height: 180px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.18;
+      animation: auroraDrift linear infinite;
+    }
+
+    .aurora-band:nth-child(1) {
+      top: 10%;
+      background: linear-gradient(90deg, #00ff88, #00ccff, #7700ff);
+      animation-duration: 18s;
+      animation-delay: 0s;
+    }
+
+    .aurora-band:nth-child(2) {
+      top: 30%;
+      background: linear-gradient(90deg, #ff6600, #ffcc00, #00ffcc);
+      animation-duration: 24s;
+      animation-delay: -6s;
+      opacity: 0.1;
+    }
+
+    .aurora-band:nth-child(3) {
+      top: 55%;
+      background: linear-gradient(90deg, #0088ff, #cc00ff, #00ff44);
+      animation-duration: 20s;
+      animation-delay: -12s;
+      opacity: 0.12;
+    }
+
+    @keyframes auroraDrift {
+      0% {
+        transform: translateX(-20%) scaleY(1);
+      }
+
+      33% {
+        transform: translateX(5%) scaleY(1.3);
+      }
+
+      66% {
+        transform: translateX(-10%) scaleY(0.8);
+      }
+
+      100% {
+        transform: translateX(-20%) scaleY(1);
+      }
+    }
+
+    /* Floating magical runes / orbs on map */
+    .magic-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      animation: orbFloat ease-in-out infinite alternate;
+    }
+
+    @keyframes orbFloat {
+      from {
+        transform: translateY(0px) scale(1);
+        opacity: 0.6;
+      }
+
+      to {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    /* Stars twinkle layer for sidebar */
+    #sidebar {
+      position: relative;
+      overflow: hidden;
+    }
+
+    #sidebar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle 1px at 20% 15%, rgba(255, 220, 100, 0.8) 0%, transparent 2px),
+        radial-gradient(circle 1px at 75% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 2px),
+        radial-gradient(circle 1px at 40% 55%, rgba(200, 168, 60, 0.9) 0%, transparent 2px),
+        radial-gradient(circle 1px at 85% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 2px),
+        radial-gradient(circle 1px at 15% 80%, rgba(200, 168, 60, 0.7) 0%, transparent 2px),
+        radial-gradient(circle 1px at 60% 90%, rgba(255, 220, 100, 0.5) 0%, transparent 2px);
+      pointer-events: none;
+      z-index: 0;
+      animation: sidebarStars 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes sidebarStars {
+      from {
+        opacity: 0.5;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Music control button */
+    #music-btn {
+      width: 100%;
+      background: rgba(0, 160, 255, 0.12);
+      border: 1px solid rgba(0, 160, 255, 0.35);
+      border-radius: 8px;
+      color: #88ccff;
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    #music-btn:hover {
+      background: rgba(0, 160, 255, 0.25);
+      border-color: rgba(0, 200, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    #music-btn.playing {
+      background: rgba(0, 200, 100, 0.15);
+      border-color: rgba(0, 255, 128, 0.4);
+      color: #88ffcc;
+    }
+
+    /* Music note pulse animation */
+    .music-note-anim {
+      display: inline-block;
+      animation: noteJump 0.5s ease infinite alternate;
+    }
+
+    @keyframes noteJump {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-3px);
+      }
+    }
+
+    /* Enhanced board title glow */
+    #board-title h1 {
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from {
+        text-shadow:
+          2px 2px 0 #4a0000,
+          0 0 20px rgba(139, 26, 26, 0.6),
+          3px 3px 8px rgba(0, 0, 0, 0.8);
+      }
+
+      to {
+        text-shadow:
+          2px 2px 0 #4a0000,
+          0 0 35px rgba(200, 60, 60, 0.9),
+          0 0 60px rgba(139, 26, 26, 0.5),
+          3px 3px 8px rgba(0, 0, 0, 0.8);
+      }
+    }
+
+    /* Fog / mist layer on map */
+    #map-mist {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 30% at 10% 90%, rgba(200, 230, 255, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 25% at 90% 20%, rgba(180, 220, 255, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 20% at 50% 50%, rgba(220, 240, 255, 0.04) 0%, transparent 70%);
+      animation: mistDrift 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes mistDrift {
+      from {
+        transform: translateX(-5px) translateY(-3px);
+        opacity: 0.7;
+      }
+
+      to {
+        transform: translateX(8px) translateY(5px);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="particle-canvas"></canvas>
+
+  <div id="game-container">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" role="complementary" aria-label="Panel de Jugadores">
+      <div id="sidebar-title">⚔ Jugadores</div>
+      <div id="players-list"></div>
+      <div style="flex:1"></div>
+      <!-- Utility buttons -->
+      <button class="sidebar-util-btn" id="btn-sound" title="Activar/Desactivar sonido">
+        <i class="fas fa-volume-up" id="sound-icon"></i> Sonido
+      </button>
+      <button id="music-btn" title="Música ambiental">
+        <i class="fas fa-music"></i> <span id="music-label">Música</span>
+      </button>
+      <button class="sidebar-util-btn" id="btn-restart-side" title="Reiniciar partida">
+        <i class="fas fa-redo"></i> Reiniciar
+      </button>
+    </aside>
+
+    <!-- MAP AREA -->
+    <div id="map-area" role="main" aria-label="Tablero de juego">
+      <!-- Aurora effect -->
+      <div id="map-aurora">
+        <div class="aurora-band"></div>
+        <div class="aurora-band"></div>
+        <div class="aurora-band"></div>
+      </div>
+      <!-- Mist overlay -->
+      <div id="map-mist"></div>
+      <canvas id="map-canvas"></canvas>
+
+      <!-- Title -->
+      <div id="board-title">
+        <h1>Olimpiada del Pensamiento Fimeño</h1>
+      </div>
+
+      <!-- Landmarks (decorative) -->
+      <div class="landmark" id="lm-edificio1" style="left:16%;top:14%">
+        <span class="landmark-icon">🏰</span>Edificio 1
+      </div>
+      <div class="landmark" id="lm-edificio2" style="left:42%;top:10%">
+        <span class="landmark-icon">🏛</span>Edificio 2
+      </div>
+      <div class="landmark" id="lm-edificio3" style="left:62%;top:10%">
+        <span class="landmark-icon">🏯</span>Edificio 3
+      </div>
+      <div class="landmark" id="lm-edificio4" style="left:74%;top:48%">
+        <span class="landmark-icon">🏟</span>Edificio 4
+      </div>
+      <div class="landmark" id="lm-eloso" style="left:64%;top:54%">
+        <span class="landmark-icon">🐻</span>El Oso
+      </div>
+      <div class="landmark" id="lm-biblioteca" style="left:28%;top:55%">
+        <span class="landmark-icon">📚</span>Edificio 9
+      </div>
+      <div class="landmark" id="lm-cafeteria" style="left:38%;top:72%">
+        <span class="landmark-icon">☕</span>Cafetería
+      </div>
+      <div class="landmark" id="lm-cidlt" style="left:58%;top:80%">
+        <span class="landmark-icon">🖥</span>Cidlt
+      </div>
+      <div class="landmark" id="lm-poli" style="left:76%;top:64%">
+        <span class="landmark-icon">🎓</span>El Poli
+      </div>
+      <div class="landmark" id="lm-final" style="left:22%;top:75%">
+        <span class="landmark-icon">🏁</span>Final
+      </div>
+
+      <!-- Cells will be injected here -->
+      <div id="cells-container" style="position:absolute;inset:0;z-index:10;pointer-events:none;"></div>
+
+      <!-- Player tokens will be injected here -->
+      <div id="tokens-container" style="position:absolute;inset:0;z-index:20;pointer-events:none;"></div>
+
+      <!-- Bear Dado button -->
+      <div id="bear-zone">
+        <button id="bear-btn" aria-label="Tira el Oso Dado" title="¡Tira el Oso Dado!">🐻</button>
+        <div id="dice-display">🎲</div>
+        <div id="bear-label">¡Tira el Oso Dado!</div>
+      </div>
+
+      <!-- Turn indicator -->
+      <div id="turn-indicator">Turno: —</div>
+
+      <!-- Bottom controls -->
+      <div id="bottom-controls">
+        <button class="ctrl-btn" id="btn-instructivo" aria-label="Ver instructivo">
+          <i class="fas fa-plus"></i> Instructivo
+        </button>
+        <button class="ctrl-btn" id="btn-inicio" aria-label="Ir al inicio">
+          <i class="fas fa-plus"></i> Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- STREAK BANNER -->
+  <div id="streak-banner">🔥 ¡Racha de 3! ¡Eres imparable!</div>
+
+  <!-- SETUP MODAL -->
+  <div class="modal-overlay" id="setup-modal" role="dialog" aria-modal="true" aria-label="Configuración del juego">
+    <div class="modal-box">
+      <div class="setup-title">⚔ Olimpiada del Pensamiento Fimeño</div>
+      <p
+        style="font-family:var(--font-body);font-size:0.8rem;color:rgba(245,230,200,0.7);text-align:center;margin-bottom:16px;">
+        Selecciona el número de jugadores</p>
+      <div class="player-count-wrap">
+        <button class="count-btn selected" data-count="2">2</button>
+        <button class="count-btn" data-count="3">3</button>
+        <button class="count-btn" data-count="4">4</button>
+      </div>
+      <div class="player-names-grid" id="player-names-grid"></div>
+      <button id="start-game-btn">⚔ Comenzar Aventura ⚔</button>
+    </div>
+  </div>
+
+  <!-- QUESTION MODAL -->
+  <div class="modal-overlay" id="question-modal" role="dialog" aria-modal="true" aria-label="Pregunta">
+    <div class="modal-box">
+      <div class="modal-category" id="q-category"></div>
+      <div class="modal-question" id="q-text"></div>
+      <div class="options-grid" id="q-options"></div>
+      <div class="open-answer-wrap" id="q-open" style="display:none">
+        <input type="text" id="open-answer-input" placeholder="Escribe tu respuesta..." autocomplete="off">
+        <button id="open-answer-submit">Enviar</button>
+      </div>
+      <div class="modal-feedback" id="q-feedback"></div>
+    </div>
+  </div>
+
+  <!-- VICTORY MODAL -->
+  <div class="modal-overlay" id="victory-modal" role="dialog" aria-modal="true" aria-label="Victoria">
+    <div class="modal-box">
+      <div class="victory-emoji">🏆</div>
+      <div class="victory-title">¡VICTORIA!</div>
+      <div class="victory-name" id="victory-name"></div>
+      <div class="victory-score" id="victory-score"></div>
+      <button class="ctrl-btn" id="btn-victory-restart"
+        style="margin-top:18px;width:100%;justify-content:center;background:#1a5a1a;border-color:#4aaa4a;color:white;">
+        <i class="fas fa-redo"></i> Jugar de Nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div class="modal-overlay" id="instructions-modal" role="dialog" aria-modal="true" aria-label="Instrucciones">
+    <div class="modal-box">
+      <button class="modal-close-btn" id="close-instructions">✕</button>
+      <div class="instructions-title">📜 Instructivo del Juego</div>
+      <div class="instructions-body">
+        <h4>🎯 Objetivo</h4>
+        <p>Sé el primer jugador en llegar a la casilla 46 (Meta). Responde preguntas correctamente para acumular puntos
+          y ventajas.</p>
+        <h4>🎲 Turno</h4>
+        <p>Pulsa el botón 🐻 para lanzar el dado (1-6). Tu ficha avanzará casilla por casilla. Si te pasas de la Meta,
+          pierdes el turno.</p>
+        <h4>❓ Preguntas</h4>
+        <p>Al caer en una casilla de color, responde la pregunta. <b style="color:#6aff8a">Acierto:</b> +1 punto, te
+          quedas. <b style="color:#ff7070">Error:</b> retrocedes 1 casilla.</p>
+        <h4>🔥 Racha</h4>
+        <p>3 aciertos consecutivos desatan una celebración especial. ¡Ponle presión al rival!</p>
+        <h4>🗺 Categorías</h4>
+        <div class="cat-legend">
+          <div class="cat-legend-item">
+            <div class="legend-dot" style="background:var(--cat-math)"></div> Matemáticas
+          </div>
+          <div class="cat-legend-item">
+            <div class="legend-dot" style="background:var(--cat-sci)"></div> Ciencias
+          </div>
+          <div class="cat-legend-item">
+            <div class="legend-dot" style="background:var(--cat-art)"></div> Arte
+          </div>
+          <div class="cat-legend-item">
+            <div class="legend-dot" style="background:var(--cat-hist)"></div> Historia
+          </div>
+          <div class="cat-legend-item">
+            <div class="legend-dot" style="background:var(--cat-logic)"></div> Lógica
+          </div>
+        </div>
+        <h4>💾 Guardado automático</h4>
+        <p>Tu partida se guarda automáticamente en cada turno. Si cierras el navegador, puedes retomar desde donde
+          dejaste.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════
+       BANCO DE PREGUNTAS
+    ═══════════════════════════════════════════════════════════════ */
+    const bancoPreguntas = [
+      // MATEMÁTICAS
+      {
+        id: 1, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Si un pastel se divide en 8 partes y comes 3, ¿qué fracción queda?",
+        opciones: ["3/8", "5/8", "1/2", "3/4"], correcta: "5/8"
+      },
+      {
+        id: 2, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "¿Cuál es el siguiente número en la serie: 2, 6, 12, 20...?",
+        opciones: ["24", "30", "36", "42"], correcta: "30"
+      },
+      {
+        id: 3, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Si el 20% de un número es 40, ¿cuál es el número?",
+        opciones: ["100", "150", "200", "800"], correcta: "200"
+      },
+      // CIENCIAS
+      {
+        id: 4, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿El hielo flota en el agua porque es más liviano?",
+        opciones: ["Verdadero", "Falso. Es menos denso."], correcta: "Falso. Es menos denso."
+      },
+      {
+        id: 5, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Qué gas absorben las plantas durante la fotosíntesis?",
+        opciones: ["Oxígeno", "Nitrógeno", "Dióxido de Carbono", "Hidrógeno"], correcta: "Dióxido de Carbono"
+      },
+      {
+        id: 6, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Cuál es el planeta conocido como el 'Planeta Rojo'?",
+        opciones: ["Venus", "Júpiter", "Marte", "Saturno"], correcta: "Marte"
+      },
+      // ARTE
+      {
+        id: 7, categoria: "Arte", habilidad: "Creativo", tipo: "abierta",
+        pregunta: "Nombra una canción famosa que tenga un color en su título (Ej: 'Yellow' de Coldplay).",
+        correctas: ["yellow", "blue", "red", "black", "white", "purple", "green", "amarillo", "rojo", "azul", "negro", "blanco", "verde", "pink", "rosa", "grey", "gray", "gris", "golden", "dorado", "silver", "plata", "orange", "naranja", "violet", "violeta", "indigo", "índigo"]
+      },
+      {
+        id: 8, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Quién pintó la Mona Lisa?",
+        opciones: ["Van Gogh", "Picasso", "Da Vinci", "Dalí"], correcta: "Da Vinci"
+      },
+      {
+        id: 9, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Cómo se llama el arte japonés de doblar papel?",
+        opciones: ["Ikebana", "Haiku", "Origami", "Bonsái"], correcta: "Origami"
+      },
+      // HISTORIA
+      {
+        id: 10, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿En qué siglo ocurrió la Revolución Mexicana?",
+        opciones: ["Siglo XVIII", "Siglo XIX", "Siglo XX", "Siglo XXI"], correcta: "Siglo XX"
+      },
+      {
+        id: 11, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿En qué año cayó el Muro de Berlín?",
+        opciones: ["1989", "1991", "1985", "1995"], correcta: "1989"
+      },
+      {
+        id: 12, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿Quién descubrió América en 1492?",
+        opciones: ["Magallanes", "Cortés", "Colón", "Pizarro"], correcta: "Colón"
+      },
+      // LÓGICA
+      {
+        id: 13, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Pedro es más alto que Juan, y Juan es más alto que Luis. ¿Quién es el más bajo?",
+        opciones: ["Pedro", "Juan", "Luis", "Ninguno"], correcta: "Luis"
+      },
+      {
+        id: 14, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Algunos meses tienen 31 días, otros 30. ¿Cuántos tienen 28 días?",
+        opciones: ["1", "Todos", "Ninguno", "2"], correcta: "Todos"
+      },
+      {
+        id: 15, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "¿Qué pesa más, un kilo de plumas o un kilo de plomo?",
+        opciones: ["Las plumas", "El plomo", "Pesan lo mismo", "Depende del tamaño"], correcta: "Pesan lo mismo"
+      }
+    ];
+
+    /* ═══════════════════════════════════════════════════════════════
+       PATH COORDINATES (46 cells, serpentine map path)
+       Percentage-based so they scale with the viewport.
+       Format: { x: %, y: % }
+    ═══════════════════════════════════════════════════════════════ */
+    const camino = [
+      // Row 1 — left to right (cells 1-9)
+      { x: 19, y: 21 }, { x: 27, y: 21 }, { x: 34, y: 21 }, { x: 41, y: 21 }, { x: 50, y: 19 }, { x: 58, y: 19 }, { x: 65, y: 21 }, { x: 73, y: 21 }, { x: 81, y: 21 },
+      // Right column going down (10-12)
+      { x: 84, y: 30 }, { x: 84, y: 40 }, { x: 81, y: 50 },
+      // Inner spiral turn right side (13-20)
+      { x: 75, y: 52 }, { x: 68, y: 52 }, { x: 61, y: 50 }, { x: 57, y: 46 }, { x: 55, y: 41 }, { x: 57, y: 36 }, { x: 62, y: 33 }, { x: 69, y: 33 },
+      // Top inner row right-to-left (21)
+      { x: 76, y: 30 },
+      // Inner right going down (22-25)
+      { x: 70, y: 40 }, { x: 63, y: 42 }, { x: 56, y: 44 }, { x: 50, y: 47 },
+      // Inner turn bottom (26-28)
+      { x: 44, y: 49 }, { x: 40, y: 53 }, { x: 45, y: 59 },
+      // Bottom inner row right-to-left (29-33)
+      { x: 52, y: 62 }, { x: 59, y: 62 }, { x: 67, y: 63 }, { x: 74, y: 64 }, { x: 82, y: 65 },
+      // Right bottom going down (34-36)
+      { x: 82, y: 73 }, { x: 73, y: 77 }, { x: 63, y: 79 },
+      // Bottom row right-to-left (37-41)
+      { x: 54, y: 80 }, { x: 44, y: 81 }, { x: 35, y: 80 }, { x: 28, y: 74 }, { x: 29, y: 65 },
+      // Left spiral going up (42-44)
+      { x: 36, y: 60 }, { x: 37, y: 50 }, { x: 31, y: 44 },
+      // Far left going down to FINAL (45-46)
+      { x: 25, y: 58 }, { x: 23, y: 70 }
+    ];
+
+    /* Category assignment for each cell (0-indexed) */
+    const categorias = [
+      'start',  // 0 → Casilla 1
+      'mat', 'cie', 'art', 'his', 'log',   // 1-5
+      'mat', 'cie', 'art',               // 6-8
+      'his', 'log', 'mat',               // 9-11
+      'cie', 'art', 'his', 'log', 'mat', 'cie', 'art', 'his', // 12-19
+      'log',                           // 20
+      'mat', 'cie', 'art', 'his', 'log',   // 21-25
+      'mat', 'cie', 'art',               // 26-28
+      'his', 'log', 'mat', 'cie', 'art',   // 29-33
+      'his', 'log', 'mat',               // 34-36
+      'cie', 'art', 'his', 'log', 'mat',   // 37-41
+      'cie', 'art', 'his',               // 42-44
+      'log', 'end'                      // 45-46 → but array is 0-45 = cells 1-46
+    ];
+
+    const catColors = {
+      start: '#2c9a2c', end: '#c8a83c',
+      mat: '#3a7bd5', cie: '#e07830', art: '#2ea855',
+      his: '#cc3333', log: '#8844bb'
+    };
+
+    const catLabels = {
+      start: 'INICIO', end: 'META',
+      mat: 'Matemáticas', cie: 'Ciencias', art: 'Arte',
+      his: 'Historia', log: 'Lógica'
+    };
+
+    const catEmojis = {
+      mat: '➕', cie: '🔬', art: '🎨', his: '📜', log: '🧩'
+    };
+
+    /* Player config */
+    const playerColors = ['#e05050', '#50a0e0', '#e0a030', '#a050e0'];
+    const playerEmojis = ['🦁', '🦊', '🐯', '🐺'];
+    const defaultNames = ['Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'];
+
+    /* ═══════════════════════════════════════════════════════════════
+       GAME STATE
+    ═══════════════════════════════════════════════════════════════ */
+    let state = {
+      jugadores: [],
+      turnoActual: 0,
+      juegoActivo: false,
+      sonidoActivado: true,
+      modalAbierto: false
+    };
+
+    /* ═══════════════════════════════════════════════════════════════
+       WEB AUDIO API
+    ═══════════════════════════════════════════════════════════════ */
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function playTone(freq, type, duration, gain = 0.3) {
+      if (!state.sonidoActivado) return;
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.8, ctx.currentTime + duration);
+        gainNode.gain.setValueAtTime(gain, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) { }
+    }
+
+    function playBip() { playTone(440, 'sine', 0.08, 0.2); }
+    function playSuccess() {
+      [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.15, 0.3), i * 100));
+    }
+    function playError() { playTone(150, 'sawtooth', 0.4, 0.25); }
+    function playDice() { [300, 400, 350, 500].forEach((f, i) => setTimeout(() => playTone(f, 'square', 0.05, 0.15), i * 80)); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CANVAS — draw the path lines
+    ═══════════════════════════════════════════════════════════════ */
+    function drawMapCanvas() {
+      const canvas = document.getElementById('map-canvas');
+      const W = canvas.offsetWidth;
+      const H = canvas.offsetHeight;
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+
+      const pts = camino.map(p => ({ x: W * p.x / 100, y: H * p.y / 100 }));
+
+      // Draw road / path
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 38;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = 'rgba(255,255,255,0.08)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) {
+        const xc = (pts[i - 1].x + pts[i].x) / 2;
+        const yc = (pts[i - 1].y + pts[i].y) / 2;
+        ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, xc, yc);
+      }
+      ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+      ctx.stroke();
+
+      // White inner road
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 26;
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) {
+        const xc = (pts[i - 1].x + pts[i].x) / 2;
+        const yc = (pts[i - 1].y + pts[i].y) / 2;
+        ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, xc, yc);
+      }
+      ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RENDERIZADO — CELLS
+    ═══════════════════════════════════════════════════════════════ */
+    function renderCells() {
+      const container = document.getElementById('cells-container');
+      container.innerHTML = '';
+      const W = document.getElementById('map-area').offsetWidth;
+      const H = document.getElementById('map-area').offsetHeight;
+
+      camino.forEach((pt, i) => {
+        const cell = document.createElement('div');
+        const cat = categorias[i] || 'mat';
+        cell.className = `cell cat-${cat}`;
+        cell.id = `cell-${i}`;
+        cell.style.left = `${W * pt.x / 100}px`;
+        cell.style.top = `${H * pt.y / 100}px`;
+        cell.style.pointerEvents = 'auto';
+
+        if (cat === 'start' || cat === 'end') {
+          cell.classList.add(cat === 'start' ? 'start-cell' : 'end-cell');
+          const lbl = document.createElement('div');
+          lbl.className = 'cell-label';
+          lbl.textContent = cat === 'start' ? '⭐ INICIO' : '🏆 META';
+          cell.appendChild(lbl);
+        } else {
+          const num = document.createElement('div');
+          num.className = 'cell-number';
+          num.style.background = catColors[cat];
+          num.textContent = i + 1;
+          cell.appendChild(num);
+        }
+
+        container.appendChild(cell);
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RENDERIZADO — PLAYER CARDS in sidebar
+    ═══════════════════════════════════════════════════════════════ */
+    function renderPlayerCards() {
+      const list = document.getElementById('players-list');
+      list.innerHTML = '';
+      state.jugadores.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = `player-card ${i === state.turnoActual ? 'active-card' : ''}`;
+        card.id = `player-card-${i}`;
+
+        const progress = Math.round((p.posicion / (camino.length - 1)) * 100);
+
+        card.innerHTML = `
       <div class="player-avatar" style="background:radial-gradient(circle at 35% 35%, ${lighten(p.color)}, ${p.color})">
         ${p.emoji}
       </div>
@@ -1487,549 +2006,851 @@ function renderPlayerCards() {
         <div class="progress-bar-fill" style="width:${progress}%;background:${p.color}"></div>
       </div>
     `;
-    list.appendChild(card);
-  });
-}
+        list.appendChild(card);
+      });
+    }
 
-function lighten(hex) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `rgb(${Math.min(255,r+60)},${Math.min(255,g+60)},${Math.min(255,b+60)})`;
-}
+    function lighten(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgb(${Math.min(255, r + 60)},${Math.min(255, g + 60)},${Math.min(255, b + 60)})`;
+    }
 
-/* ═══════════════════════════════════════════════════════════════
-   RENDERIZADO — TOKENS
-═══════════════════════════════════════════════════════════════ */
-function renderTokens() {
-  const container = document.getElementById('tokens-container');
-  container.innerHTML = '';
-  const W = document.getElementById('map-area').offsetWidth;
-  const H = document.getElementById('map-area').offsetHeight;
+    /* ═══════════════════════════════════════════════════════════════
+       RENDERIZADO — TOKENS
+    ═══════════════════════════════════════════════════════════════ */
+    function renderTokens() {
+      const container = document.getElementById('tokens-container');
+      container.innerHTML = '';
+      const W = document.getElementById('map-area').offsetWidth;
+      const H = document.getElementById('map-area').offsetHeight;
 
-  state.jugadores.forEach((p, i) => {
-    const pt = camino[p.posicion];
-    const offsetX = (i % 2 === 0 ? -1 : 1) * 12;
-    const offsetY = (i < 2 ? -1 : 1) * 10;
+      state.jugadores.forEach((p, i) => {
+        const pt = camino[p.posicion];
+        const offsetX = (i % 2 === 0 ? -1 : 1) * 12;
+        const offsetY = (i < 2 ? -1 : 1) * 10;
 
-    const token = document.createElement('div');
-    token.className = `player-token ${i === state.turnoActual ? 'active-token' : ''}`;
-    token.id = `token-${i}`;
-    token.style.left = `${W * pt.x / 100 + offsetX}px`;
-    token.style.top  = `${H * pt.y / 100 + offsetY}px`;
-    token.style.background = `radial-gradient(circle at 35% 35%, ${lighten(p.color)}, ${p.color})`;
-    token.style.color = 'white';
-    token.textContent = p.emoji;
-    token.title = p.nombre;
+        const token = document.createElement('div');
+        token.className = `player-token ${i === state.turnoActual ? 'active-token' : ''}`;
+        token.id = `token-${i}`;
+        token.style.left = `${W * pt.x / 100 + offsetX}px`;
+        token.style.top = `${H * pt.y / 100 + offsetY}px`;
+        token.style.background = `radial-gradient(circle at 35% 35%, ${lighten(p.color)}, ${p.color})`;
+        token.style.color = 'white';
+        token.textContent = p.emoji;
+        token.title = p.nombre;
 
-    container.appendChild(token);
-  });
-}
+        container.appendChild(token);
+      });
+    }
 
-/* Move a single token to a new cell */
-function moveTokenTo(playerIdx, cellIdx) {
-  const W = document.getElementById('map-area').offsetWidth;
-  const H = document.getElementById('map-area').offsetHeight;
-  const pt = camino[cellIdx];
-  const token = document.getElementById(`token-${playerIdx}`);
-  if (!token) return;
+    /* Move a single token to a new cell */
+    function moveTokenTo(playerIdx, cellIdx) {
+      const W = document.getElementById('map-area').offsetWidth;
+      const H = document.getElementById('map-area').offsetHeight;
+      const pt = camino[cellIdx];
+      const token = document.getElementById(`token-${playerIdx}`);
+      if (!token) return;
 
-  const offsetX = (playerIdx % 2 === 0 ? -1 : 1) * 12;
-  const offsetY = (playerIdx < 2 ? -1 : 1) * 10;
+      const offsetX = (playerIdx % 2 === 0 ? -1 : 1) * 12;
+      const offsetY = (playerIdx < 2 ? -1 : 1) * 10;
 
-  token.style.left = `${W * pt.x / 100 + offsetX}px`;
-  token.style.top  = `${H * pt.y / 100 + offsetY}px`;
-}
+      token.style.left = `${W * pt.x / 100 + offsetX}px`;
+      token.style.top = `${H * pt.y / 100 + offsetY}px`;
+    }
 
-/* ═══════════════════════════════════════════════════════════════
-   TURN INDICATOR
-═══════════════════════════════════════════════════════════════ */
-function updateTurnIndicator() {
-  const p = state.jugadores[state.turnoActual];
-  if (!p) return;
-  document.getElementById('turn-indicator').innerHTML =
-    `Turno: <span style="color:${p.color};font-weight:900">${p.emoji} ${p.nombre}</span>`;
-}
+    /* ═══════════════════════════════════════════════════════════════
+       TURN INDICATOR
+    ═══════════════════════════════════════════════════════════════ */
+    function updateTurnIndicator() {
+      const p = state.jugadores[state.turnoActual];
+      if (!p) return;
+      document.getElementById('turn-indicator').innerHTML =
+        `Turno: <span style="color:${p.color};font-weight:900">${p.emoji} ${p.nombre}</span>`;
+    }
 
-/* ═══════════════════════════════════════════════════════════════
-   DICE ANIMATION
-═══════════════════════════════════════════════════════════════ */
-const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+    /* ═══════════════════════════════════════════════════════════════
+       DICE ANIMATION
+    ═══════════════════════════════════════════════════════════════ */
+    const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
-async function animateDice(result) {
-  return new Promise(resolve => {
-    const el = document.getElementById('dice-display');
-    el.classList.add('rolling');
-    playDice();
-    let ticks = 0;
-    const iv = setInterval(() => {
-      el.textContent = diceFaces[Math.floor(Math.random()*6)];
-      ticks++;
-      if (ticks > 10) {
-        clearInterval(iv);
-        el.textContent = diceFaces[result - 1];
-        el.classList.remove('rolling');
-        resolve();
+    async function animateDice(result) {
+      return new Promise(resolve => {
+        const el = document.getElementById('dice-display');
+        el.classList.add('rolling');
+        playDice();
+        let ticks = 0;
+        const iv = setInterval(() => {
+          el.textContent = diceFaces[Math.floor(Math.random() * 6)];
+          ticks++;
+          if (ticks > 10) {
+            clearInterval(iv);
+            el.textContent = diceFaces[result - 1];
+            el.classList.remove('rolling');
+            resolve();
+          }
+        }, 55);
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ANIMACIÓN — Move token step by step
+    ═══════════════════════════════════════════════════════════════ */
+    async function animateMove(playerIdx, fromCell, toCell) {
+      const step = fromCell < toCell ? 1 : -1;
+      let current = fromCell;
+      while (current !== toCell) {
+        current += step;
+        moveTokenTo(playerIdx, current);
+        playBip();
+        await sleep(300);
       }
-    }, 55);
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   ANIMACIÓN — Move token step by step
-═══════════════════════════════════════════════════════════════ */
-async function animateMove(playerIdx, fromCell, toCell) {
-  const step = fromCell < toCell ? 1 : -1;
-  let current = fromCell;
-  while (current !== toCell) {
-    current += step;
-    moveTokenTo(playerIdx, current);
-    playBip();
-    await sleep(300);
-  }
-}
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-/* ═══════════════════════════════════════════════════════════════
-   LÓGICA — Main turn cycle
-═══════════════════════════════════════════════════════════════ */
-async function launchDice() {
-  if (!state.juegoActivo || state.modalAbierto) return;
-  setDiceEnabled(false);
-
-  const result = Math.floor(Math.random() * 6) + 1;
-  await animateDice(result);
-  await sleep(200);
-
-  const p = state.jugadores[state.turnoActual];
-  const newPos = p.posicion + result;
-
-  // Exact rule: if overshoots, skip turn
-  if (newPos >= camino.length) {
-    showToast(`${p.emoji} ¡Te pasas! Pierde turno.`, 'info');
-    await sleep(1000);
-    nextTurn();
-    return;
-  }
-
-  // Animate movement
-  const oldPos = p.posicion;
-  p.posicion = newPos;
-  await animateMove(state.turnoActual, oldPos, newPos);
-  renderPlayerCards();
-  saveState();
-
-  // Check victory
-  if (newPos === camino.length - 1) {
-    triggerVictory();
-    return;
-  }
-
-  // Open question if category cell
-  const cat = categorias[newPos];
-  if (cat !== 'start' && cat !== 'end') {
-    await sleep(200);
-    openQuestion(cat);
-  } else {
-    await sleep(400);
-    nextTurn();
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   LÓGICA — Question system
-═══════════════════════════════════════════════════════════════ */
-let currentQuestion = null;
-
-function openQuestion(cat) {
-  const catMap = { mat:'Matemáticas', cie:'Ciencias', art:'Arte', his:'Historia', log:'Lógica' };
-  const catName = catMap[cat];
-  const pool = bancoPreguntas.filter(q => q.categoria === catName);
-  currentQuestion = pool[Math.floor(Math.random() * pool.length)];
-
-  const color = catColors[cat];
-  document.getElementById('q-category').innerHTML =
-    `<span class="cat-badge" style="background:${color}"></span>
-     <span style="color:${color}">${catEmojis[cat]} ${catName}</span>
-     <span style="color:rgba(255,255,255,0.4);font-size:0.7rem;font-family:var(--font-num)"> · ${currentQuestion.habilidad}</span>`;
-  document.getElementById('q-text').textContent = currentQuestion.pregunta;
-  document.getElementById('q-feedback').textContent = '';
-
-  const optionsEl = document.getElementById('q-options');
-  const openEl = document.getElementById('q-open');
-  optionsEl.innerHTML = '';
-
-  if (currentQuestion.tipo === 'multiple') {
-    openEl.style.display = 'none';
-    optionsEl.style.display = 'grid';
-    // Shuffle options
-    const opts = [...currentQuestion.opciones].sort(() => Math.random() - 0.5);
-    opts.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.textContent = opt;
-      btn.addEventListener('click', () => checkAnswer(opt, btn));
-      optionsEl.appendChild(btn);
-    });
-  } else {
-    optionsEl.style.display = 'none';
-    openEl.style.display = 'flex';
-    document.getElementById('open-answer-input').value = '';
-    document.getElementById('open-answer-input').focus();
-  }
-
-  openModal('question-modal');
-}
-
-function checkAnswer(answer, btnEl) {
-  const p = state.jugadores[state.turnoActual];
-  let correct = false;
-
-  if (currentQuestion.tipo === 'multiple') {
-    correct = answer === currentQuestion.correcta;
-    // Disable all options
-    document.querySelectorAll('.option-btn').forEach(b => {
-      b.disabled = true;
-      if (b.textContent === currentQuestion.correcta) b.classList.add('correct');
-    });
-    if (!correct && btnEl) btnEl.classList.add('wrong');
-  } else {
-    const normalised = answer.toLowerCase().trim();
-    correct = currentQuestion.correctas.some(c => normalised.includes(c));
-  }
-
-  const feedback = document.getElementById('q-feedback');
-
-  if (correct) {
-    p.puntos++;
-    p.rachaActual = (p.rachaActual || 0) + 1;
-    feedback.textContent = '✅ ¡Correcto! +1 punto';
-    feedback.className = 'modal-feedback feedback-correct';
-    showToast('¡Correcto! 🎉', 'success');
-    playSuccess();
-    if (p.rachaActual >= 3) {
-      setTimeout(() => triggerStreakCelebration(), 600);
     }
-  } else {
-    p.rachaActual = 0;
-    feedback.textContent = '❌ Incorrecto. Retrocedes 1 casilla.';
-    feedback.className = 'modal-feedback feedback-wrong';
-    showToast('¡Error! Retrocede 1 casilla.', 'error');
-    playError();
-    // Shake token
-    const token = document.getElementById(`token-${state.turnoActual}`);
-    if (token) {
-      token.classList.add('shake');
-      setTimeout(() => token.classList.remove('shake'), 500);
-    }
-    // Retreat after 1s
-    setTimeout(async () => {
-      const newPos = Math.max(0, p.posicion - 1);
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LÓGICA — Main turn cycle
+    ═══════════════════════════════════════════════════════════════ */
+    async function launchDice() {
+      if (!state.juegoActivo || state.modalAbierto) return;
+      setDiceEnabled(false);
+
+      const result = Math.floor(Math.random() * 6) + 1;
+      await animateDice(result);
+      await sleep(200);
+
+      const p = state.jugadores[state.turnoActual];
+      const newPos = p.posicion + result;
+
+      // Exact rule: if overshoots, skip turn
+      if (newPos >= camino.length) {
+        showToast(`${p.emoji} ¡Te pasas! Pierde turno.`, 'info');
+        await sleep(1000);
+        nextTurn();
+        return;
+      }
+
+      // Animate movement
       const oldPos = p.posicion;
       p.posicion = newPos;
       await animateMove(state.turnoActual, oldPos, newPos);
       renderPlayerCards();
-    }, 800);
-  }
+      saveState();
 
-  saveState();
+      // Check victory
+      if (newPos === camino.length - 1) {
+        triggerVictory();
+        return;
+      }
 
-  setTimeout(() => {
-    closeModal('question-modal');
-    setTimeout(() => nextTurn(), 300);
-  }, 1600);
-}
-
-function checkOpenAnswer() {
-  const val = document.getElementById('open-answer-input').value;
-  if (!val.trim()) return;
-  checkAnswer(val, null);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   LÓGICA — Turn rotation
-═══════════════════════════════════════════════════════════════ */
-function nextTurn() {
-  state.turnoActual = (state.turnoActual + 1) % state.jugadores.length;
-  renderPlayerCards();
-  renderTokens();
-  updateTurnIndicator();
-  setDiceEnabled(true);
-  saveState();
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   VICTORY
-═══════════════════════════════════════════════════════════════ */
-function triggerVictory() {
-  state.juegoActivo = false;
-  const p = state.jugadores[state.turnoActual];
-  document.getElementById('victory-name').innerHTML =
-    `<span style="color:${p.color};font-size:1.3rem">${p.emoji} ${p.nombre}</span>`;
-  document.getElementById('victory-score').textContent = `${p.puntos} puntos`;
-  openModal('victory-modal');
-  fireConfetti();
-  playSuccess();
-  setTimeout(() => fireConfetti(), 800);
-  saveState();
-}
-
-function fireConfetti() {
-  confetti({
-    particleCount: 180,
-    spread: 100,
-    origin: { x: 0.5, y: 0.3 },
-    colors: ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7'],
-    gravity: 0.8,
-    drift: 0.5,
-    ticks: 300
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   STREAK CELEBRATION
-═══════════════════════════════════════════════════════════════ */
-function triggerStreakCelebration() {
-  const banner = document.getElementById('streak-banner');
-  const p = state.jugadores[state.turnoActual];
-  banner.textContent = `🔥 ¡${p.nombre} está en racha de 3! ¡Imparable!`;
-  banner.classList.add('show');
-  confetti({ particleCount: 80, spread: 60, origin: { x: 0.5, y: 0.5 } });
-  setTimeout(() => banner.classList.remove('show'), 2500);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MODAL HELPERS
-═══════════════════════════════════════════════════════════════ */
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  state.modalAbierto = true;
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  // Only clear modalAbierto if no other modal is open
-  const anyOpen = document.querySelectorAll('.modal-overlay.open').length > 0;
-  state.modalAbierto = anyOpen;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════════════════ */
-function showToast(msg, type='info') {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.textContent = msg;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DICE ENABLE/DISABLE
-═══════════════════════════════════════════════════════════════ */
-function setDiceEnabled(enabled) {
-  const btn = document.getElementById('bear-btn');
-  if (enabled && state.juegoActivo) {
-    btn.classList.remove('disabled');
-  } else {
-    btn.classList.add('disabled');
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   LOCAL STORAGE
-═══════════════════════════════════════════════════════════════ */
-function saveState() {
-  try {
-    localStorage.setItem('huyendo_state', JSON.stringify(state));
-  } catch(e) {}
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem('huyendo_state');
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved.juegoActivo && saved.jugadores && saved.jugadores.length > 0) return saved;
+      // Open question if category cell
+      const cat = categorias[newPos];
+      if (cat !== 'start' && cat !== 'end') {
+        await sleep(200);
+        openQuestion(cat);
+      } else {
+        await sleep(400);
+        nextTurn();
+      }
     }
-  } catch(e) {}
-  return null;
-}
 
-function clearState() {
-  try { localStorage.removeItem('huyendo_state'); } catch(e) {}
-}
+    /* ═══════════════════════════════════════════════════════════════
+       LÓGICA — Question system
+    ═══════════════════════════════════════════════════════════════ */
+    let currentQuestion = null;
 
-/* ═══════════════════════════════════════════════════════════════
-   SETUP — Player setup modal
-═══════════════════════════════════════════════════════════════ */
-let selectedCount = 2;
+    function openQuestion(cat) {
+      const catMap = { mat: 'Matemáticas', cie: 'Ciencias', art: 'Arte', his: 'Historia', log: 'Lógica' };
+      const catName = catMap[cat];
+      const pool = bancoPreguntas.filter(q => q.categoria === catName);
+      currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
-function buildSetupNames(count) {
-  const grid = document.getElementById('player-names-grid');
-  grid.innerHTML = '';
-  for (let i = 0; i < count; i++) {
-    const wrap = document.createElement('label');
-    wrap.className = 'player-name-input';
-    wrap.innerHTML = `
+      const color = catColors[cat];
+      document.getElementById('q-category').innerHTML =
+        `<span class="cat-badge" style="background:${color}"></span>
+     <span style="color:${color}">${catEmojis[cat]} ${catName}</span>
+     <span style="color:rgba(255,255,255,0.4);font-size:0.7rem;font-family:var(--font-num)"> · ${currentQuestion.habilidad}</span>`;
+      document.getElementById('q-text').textContent = currentQuestion.pregunta;
+      document.getElementById('q-feedback').textContent = '';
+
+      const optionsEl = document.getElementById('q-options');
+      const openEl = document.getElementById('q-open');
+      optionsEl.innerHTML = '';
+
+      if (currentQuestion.tipo === 'multiple') {
+        openEl.style.display = 'none';
+        optionsEl.style.display = 'grid';
+        // Shuffle options
+        const opts = [...currentQuestion.opciones].sort(() => Math.random() - 0.5);
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.addEventListener('click', () => checkAnswer(opt, btn));
+          optionsEl.appendChild(btn);
+        });
+      } else {
+        optionsEl.style.display = 'none';
+        openEl.style.display = 'flex';
+        document.getElementById('open-answer-input').value = '';
+        document.getElementById('open-answer-input').focus();
+      }
+
+      openModal('question-modal');
+    }
+
+    function checkAnswer(answer, btnEl) {
+      const p = state.jugadores[state.turnoActual];
+      let correct = false;
+
+      if (currentQuestion.tipo === 'multiple') {
+        correct = answer === currentQuestion.correcta;
+        // Disable all options
+        document.querySelectorAll('.option-btn').forEach(b => {
+          b.disabled = true;
+          if (b.textContent === currentQuestion.correcta) b.classList.add('correct');
+        });
+        if (!correct && btnEl) btnEl.classList.add('wrong');
+      } else {
+        const normalised = answer.toLowerCase().trim();
+        correct = currentQuestion.correctas.some(c => normalised.includes(c));
+      }
+
+      const feedback = document.getElementById('q-feedback');
+
+      if (correct) {
+        p.puntos++;
+        p.rachaActual = (p.rachaActual || 0) + 1;
+        feedback.textContent = '✅ ¡Correcto! +1 punto';
+        feedback.className = 'modal-feedback feedback-correct';
+        showToast('¡Correcto! 🎉', 'success');
+        playSuccess();
+        if (p.rachaActual >= 3) {
+          setTimeout(() => triggerStreakCelebration(), 600);
+        }
+      } else {
+        p.rachaActual = 0;
+        feedback.textContent = '❌ Incorrecto. Retrocedes 1 casilla.';
+        feedback.className = 'modal-feedback feedback-wrong';
+        showToast('¡Error! Retrocede 1 casilla.', 'error');
+        playError();
+        // Shake token
+        const token = document.getElementById(`token-${state.turnoActual}`);
+        if (token) {
+          token.classList.add('shake');
+          setTimeout(() => token.classList.remove('shake'), 500);
+        }
+        // Retreat after 1s
+        setTimeout(async () => {
+          const newPos = Math.max(0, p.posicion - 1);
+          const oldPos = p.posicion;
+          p.posicion = newPos;
+          await animateMove(state.turnoActual, oldPos, newPos);
+          renderPlayerCards();
+        }, 800);
+      }
+
+      saveState();
+
+      setTimeout(() => {
+        closeModal('question-modal');
+        setTimeout(() => nextTurn(), 300);
+      }, 1600);
+    }
+
+    function checkOpenAnswer() {
+      const val = document.getElementById('open-answer-input').value;
+      if (!val.trim()) return;
+      checkAnswer(val, null);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LÓGICA — Turn rotation
+    ═══════════════════════════════════════════════════════════════ */
+    function nextTurn() {
+      state.turnoActual = (state.turnoActual + 1) % state.jugadores.length;
+      renderPlayerCards();
+      renderTokens();
+      updateTurnIndicator();
+      setDiceEnabled(true);
+      saveState();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       VICTORY
+    ═══════════════════════════════════════════════════════════════ */
+    function triggerVictory() {
+      state.juegoActivo = false;
+      const p = state.jugadores[state.turnoActual];
+      document.getElementById('victory-name').innerHTML =
+        `<span style="color:${p.color};font-size:1.3rem">${p.emoji} ${p.nombre}</span>`;
+      document.getElementById('victory-score').textContent = `${p.puntos} puntos`;
+      openModal('victory-modal');
+      fireConfetti();
+      playSuccess();
+      setTimeout(() => fireConfetti(), 800);
+      saveState();
+    }
+
+    function fireConfetti() {
+      confetti({
+        particleCount: 180,
+        spread: 100,
+        origin: { x: 0.5, y: 0.3 },
+        colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'],
+        gravity: 0.8,
+        drift: 0.5,
+        ticks: 300
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PARTICLE SYSTEM
+    ═══════════════════════════════════════════════════════════════ */
+    (function () {
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles = [], animId;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      // Particle types: stars, sparkles, floating embers
+      const PARTICLE_COUNT = 120;
+
+      function randomParticle(i) {
+        const type = i < 70 ? 'star' : i < 100 ? 'sparkle' : 'ember';
+        return {
+          type,
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: type === 'star' ? Math.random() * 1.8 + 0.3
+            : type === 'sparkle' ? Math.random() * 2.5 + 1
+              : Math.random() * 3 + 1,
+          alpha: Math.random() * 0.7 + 0.1,
+          alphaDir: Math.random() > 0.5 ? 1 : -1,
+          alphaSpeed: Math.random() * 0.008 + 0.002,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: type === 'ember' ? -(Math.random() * 0.4 + 0.1) : (Math.random() - 0.5) * 0.1,
+          hue: type === 'star' ? Math.random() * 60 + 30
+            : type === 'sparkle' ? Math.random() * 120 + 160
+              : Math.random() * 30 + 15,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: Math.random() * 0.03 + 0.01,
+        };
+      }
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(randomParticle(i));
+      }
+
+      function drawParticle(p) {
+        ctx.save();
+        p.pulse += p.pulseSpeed;
+        const pAlpha = p.alpha + Math.sin(p.pulse) * 0.2;
+        const clampedAlpha = Math.max(0.02, Math.min(1, pAlpha));
+
+        if (p.type === 'star') {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, 80%, 90%, ${clampedAlpha})`;
+          ctx.shadowColor = `hsla(${p.hue}, 100%, 80%, 0.8)`;
+          ctx.shadowBlur = p.r * 3;
+          ctx.fill();
+        } else if (p.type === 'sparkle') {
+          // Diamond shape
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.pulse * 0.3);
+          ctx.beginPath();
+          const s = p.r;
+          ctx.moveTo(0, -s * 2);
+          ctx.lineTo(s * 0.5, 0);
+          ctx.lineTo(0, s * 2);
+          ctx.lineTo(-s * 0.5, 0);
+          ctx.closePath();
+          ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${clampedAlpha * 0.8})`;
+          ctx.shadowColor = `hsla(${p.hue}, 100%, 90%, 0.6)`;
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        } else {
+          // Ember — small glowing circle
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2);
+          grad.addColorStop(0, `hsla(${p.hue}, 100%, 90%, ${clampedAlpha})`);
+          grad.addColorStop(1, `hsla(${p.hue}, 100%, 60%, 0)`);
+          ctx.fillStyle = grad;
+          ctx.shadowColor = `hsla(${p.hue}, 100%, 70%, 0.9)`;
+          ctx.shadowBlur = 12;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function updateParticle(p) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha += p.alphaDir * p.alphaSpeed;
+        if (p.alpha > 0.9 || p.alpha < 0.05) p.alphaDir *= -1;
+        // Wrap around
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+        if (p.y < -10) p.y = H + 10;
+        if (p.y > H + 10) p.y = -10;
+      }
+
+      function tick() {
+        ctx.clearRect(0, 0, W, H);
+        for (const p of particles) {
+          drawParticle(p);
+          updateParticle(p);
+        }
+        animId = requestAnimationFrame(tick);
+      }
+
+      tick();
+    })();
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAGIC ORBS (on map area)
+    ═══════════════════════════════════════════════════════════════ */
+    (function () {
+      const orbData = [
+        { left: '8%', top: '35%', size: 40, hue: 140, delay: '0s', dur: '5s' },
+        { left: '88%', top: '25%', size: 28, hue: 200, delay: '1.5s', dur: '6s' },
+        { left: '50%', top: '88%', size: 34, hue: 60, delay: '0.8s', dur: '4.5s' },
+        { left: '20%', top: '90%', size: 22, hue: 280, delay: '2s', dur: '7s' },
+        { left: '78%', top: '82%', size: 30, hue: 20, delay: '0.3s', dur: '5.5s' },
+        { left: '5%', top: '68%', size: 18, hue: 170, delay: '3s', dur: '6.5s' },
+        { left: '93%', top: '58%', size: 24, hue: 45, delay: '1s', dur: '4s' },
+      ];
+
+      const mapArea = document.getElementById('map-area');
+      for (const o of orbData) {
+        const el = document.createElement('div');
+        el.className = 'magic-orb';
+        el.style.cssText = `
+      left: ${o.left}; top: ${o.top};
+      width: ${o.size}px; height: ${o.size}px;
+      background: radial-gradient(circle at 35% 35%,
+        hsla(${o.hue},100%,90%,0.9),
+        hsla(${o.hue},80%,50%,0.5) 50%,
+        transparent 80%);
+      box-shadow: 0 0 ${o.size}px hsla(${o.hue},100%,70%,0.4),
+                  0 0 ${o.size * 2}px hsla(${o.hue},100%,60%,0.2);
+      animation-delay: ${o.delay};
+      animation-duration: ${o.dur};
+    `;
+        mapArea.appendChild(el);
+      }
+    })();
+
+    /* ═══════════════════════════════════════════════════════════════
+       AMBIENT MUSIC (Web Audio API — no external files needed)
+    ═══════════════════════════════════════════════════════════════ */
+    const AmbientMusic = (() => {
+      let ctx = null, playing = false;
+      let masterGain, reverbGain, dryGain;
+      let sources = [];
+      let scheduledIds = [];
+
+      // Fantasy chord progressions (frequencies in Hz)
+      const SCALES = {
+        // D minor pentatonic ish
+        melody: [293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 659.25],
+        bass: [73.42, 87.31, 98.00, 110.00],
+      };
+
+      function initCtx() {
+        if (ctx) return;
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0.0, ctx.currentTime);
+        masterGain.gain.linearRampToValueAtTime(0.38, ctx.currentTime + 2);
+        masterGain.connect(ctx.destination);
+
+        // Simple convolver reverb
+        reverbGain = ctx.createGain();
+        reverbGain.gain.value = 0.35;
+        const convolver = createReverb(ctx, 3.0);
+        reverbGain.connect(convolver);
+        convolver.connect(masterGain);
+
+        dryGain = ctx.createGain();
+        dryGain.gain.value = 0.65;
+        dryGain.connect(masterGain);
+      }
+
+      function createReverb(actx, duration) {
+        const length = actx.sampleRate * duration;
+        const impulse = actx.createBuffer(2, length, actx.sampleRate);
+        for (let c = 0; c < 2; c++) {
+          const ch = impulse.getChannelData(c);
+          for (let i = 0; i < length; i++) {
+            ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5);
+          }
+        }
+        const conv = actx.createConvolver();
+        conv.buffer = impulse;
+        return conv;
+      }
+
+      function makeNote(freq, startTime, duration, vol = 0.1, type = 'sine', detune = 0) {
+        if (!playing) return;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        osc.detune.value = detune;
+
+        const attack = 0.4, release = duration * 0.5;
+        g.gain.setValueAtTime(0, startTime);
+        g.gain.linearRampToValueAtTime(vol, startTime + attack);
+        g.gain.setValueAtTime(vol, startTime + duration - release);
+        g.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        osc.connect(g);
+        g.connect(dryGain);
+        g.connect(reverbGain);
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.1);
+        sources.push(osc);
+      }
+
+      function scheduleMelody(startTime) {
+        if (!playing) return;
+        const mel = SCALES.melody;
+        const bass = SCALES.bass;
+        // Gentle arpeggios
+        const beatLen = 2.4;
+        const pattern = [0, 2, 4, 6, 5, 3, 1, 4];
+        for (let i = 0; i < pattern.length; i++) {
+          const t = startTime + i * beatLen;
+          const freq = mel[pattern[i]];
+          makeNote(freq, t, beatLen * 1.5, 0.06, 'sine', Math.random() * 4 - 2);
+          // Harmonics
+          makeNote(freq * 1.5, t + 0.6, beatLen, 0.025, 'sine', 5);
+          // Occasional bass drone
+          if (i % 4 === 0) {
+            const bFreq = bass[Math.floor(Math.random() * bass.length)];
+            makeNote(bFreq, t, beatLen * 4, 0.08, 'triangle', -5);
+          }
+        }
+        // Wind-like pad
+        const padFreqs = [220, 277.18, 329.63];
+        for (const f of padFreqs) {
+          makeNote(f, startTime, beatLen * pattern.length * 0.9, 0.04, 'sine', 0);
+        }
+
+        const loopDuration = beatLen * pattern.length;
+        const id = setTimeout(() => {
+          if (playing) scheduleMelody(ctx.currentTime);
+        }, (loopDuration - 1) * 1000);
+        scheduledIds.push(id);
+      }
+
+      return {
+        start() {
+          if (playing) return;
+          playing = true;
+          initCtx();
+          if (ctx.state === 'suspended') ctx.resume();
+          masterGain.gain.cancelScheduledValues(ctx.currentTime);
+          masterGain.gain.setValueAtTime(masterGain.gain.value || 0, ctx.currentTime);
+          masterGain.gain.linearRampToValueAtTime(0.38, ctx.currentTime + 2);
+          scheduleMelody(ctx.currentTime + 0.1);
+        },
+        stop() {
+          if (!playing) return;
+          playing = false;
+          scheduledIds.forEach(clearTimeout);
+          scheduledIds = [];
+          if (masterGain) {
+            masterGain.gain.cancelScheduledValues(ctx.currentTime);
+            masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
+            masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+          }
+          setTimeout(() => {
+            sources.forEach(s => { try { s.stop(); } catch (e) { } });
+            sources = [];
+          }, 1600);
+        },
+        isPlaying() { return playing; }
+      };
+    })();
+
+    // Music button handler
+    document.addEventListener('DOMContentLoaded', () => {
+      const musicBtn = document.getElementById('music-btn');
+      const musicLabel = document.getElementById('music-label');
+      let musicOn = false;
+
+      if (musicBtn) {
+        musicBtn.addEventListener('click', () => {
+          musicOn = !musicOn;
+          if (musicOn) {
+            AmbientMusic.start();
+            musicBtn.classList.add('playing');
+            musicLabel.innerHTML = '<span class="music-note-anim">♪</span> Pausar';
+          } else {
+            AmbientMusic.stop();
+            musicBtn.classList.remove('playing');
+            musicLabel.textContent = 'Música';
+          }
+        });
+      }
+    });
+
+
+    function triggerStreakCelebration() {
+      const banner = document.getElementById('streak-banner');
+      const p = state.jugadores[state.turnoActual];
+      banner.textContent = `🔥 ¡${p.nombre} está en racha de 3! ¡Imparable!`;
+      banner.classList.add('show');
+      confetti({ particleCount: 80, spread: 60, origin: { x: 0.5, y: 0.5 } });
+      setTimeout(() => banner.classList.remove('show'), 2500);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MODAL HELPERS
+    ═══════════════════════════════════════════════════════════════ */
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      state.modalAbierto = true;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      // Only clear modalAbierto if no other modal is open
+      const anyOpen = document.querySelectorAll('.modal-overlay.open').length > 0;
+      state.modalAbierto = anyOpen;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════════════════════════ */
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       DICE ENABLE/DISABLE
+    ═══════════════════════════════════════════════════════════════ */
+    function setDiceEnabled(enabled) {
+      const btn = document.getElementById('bear-btn');
+      if (enabled && state.juegoActivo) {
+        btn.classList.remove('disabled');
+      } else {
+        btn.classList.add('disabled');
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LOCAL STORAGE
+    ═══════════════════════════════════════════════════════════════ */
+    function saveState() {
+      try {
+        localStorage.setItem('huyendo_state', JSON.stringify(state));
+      } catch (e) { }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('huyendo_state');
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (saved.juegoActivo && saved.jugadores && saved.jugadores.length > 0) return saved;
+        }
+      } catch (e) { }
+      return null;
+    }
+
+    function clearState() {
+      try { localStorage.removeItem('huyendo_state'); } catch (e) { }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SETUP — Player setup modal
+    ═══════════════════════════════════════════════════════════════ */
+    let selectedCount = 2;
+
+    function buildSetupNames(count) {
+      const grid = document.getElementById('player-names-grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const wrap = document.createElement('label');
+        wrap.className = 'player-name-input';
+        wrap.innerHTML = `
       <div class="player-color-dot" style="background:${playerColors[i]}"></div>
       <input type="text" placeholder="${defaultNames[i]}" maxlength="16" id="pname-${i}">
       <span style="font-size:1rem">${playerEmojis[i]}</span>
     `;
-    grid.appendChild(wrap);
-  }
-}
-
-function initSetupModal() {
-  selectedCount = 2;
-  document.querySelectorAll('.count-btn').forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.count) === 2);
-  });
-  buildSetupNames(2);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   GAME INIT
-═══════════════════════════════════════════════════════════════ */
-function startGame(jugadores) {
-  state = {
-    jugadores: jugadores.map((nombre, i) => ({
-      nombre: nombre || defaultNames[i],
-      color: playerColors[i],
-      emoji: playerEmojis[i],
-      posicion: 0,
-      puntos: 0,
-      rachaActual: 0
-    })),
-    turnoActual: 0,
-    juegoActivo: true,
-    sonidoActivado: state.sonidoActivado !== undefined ? state.sonidoActivado : true,
-    modalAbierto: false
-  };
-  closeModal('setup-modal');
-  renderPlayerCards();
-  renderTokens();
-  updateTurnIndicator();
-  setDiceEnabled(true);
-  saveState();
-  updateSoundUI();
-}
-
-function restartGame() {
-  clearState();
-  state.juegoActivo = false;
-  closeModal('victory-modal');
-  closeModal('question-modal');
-  document.getElementById('dice-display').textContent = '🎲';
-  setDiceEnabled(false);
-  initSetupModal();
-  openModal('setup-modal');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SOUND UI
-═══════════════════════════════════════════════════════════════ */
-function updateSoundUI() {
-  const icon = document.getElementById('sound-icon');
-  if (icon) {
-    icon.className = state.sonidoActivado ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESIZE HANDLER
-═══════════════════════════════════════════════════════════════ */
-let resizeTimer;
-function onResize() {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    drawMapCanvas();
-    renderCells();
-    if (state.juegoActivo) renderTokens();
-  }, 100);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EVENT LISTENERS
-═══════════════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  // Draw map
-  drawMapCanvas();
-  renderCells();
-
-  // Count buttons
-  document.querySelectorAll('.count-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedCount = parseInt(btn.dataset.count);
-      document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      buildSetupNames(selectedCount);
-    });
-  });
-
-  // Start game button
-  document.getElementById('start-game-btn').addEventListener('click', () => {
-    const names = [];
-    for (let i = 0; i < selectedCount; i++) {
-      const input = document.getElementById(`pname-${i}`);
-      names.push(input ? input.value.trim() || defaultNames[i] : defaultNames[i]);
+        grid.appendChild(wrap);
+      }
     }
-    startGame(names);
-  });
 
-  // Bear / dice button
-  document.getElementById('bear-btn').addEventListener('click', () => {
-    if (!state.juegoActivo || state.modalAbierto) return;
-    launchDice();
-  });
+    function initSetupModal() {
+      selectedCount = 2;
+      document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.dataset.count) === 2);
+      });
+      buildSetupNames(2);
+    }
 
-  // Open answer
-  document.getElementById('open-answer-submit').addEventListener('click', checkOpenAnswer);
-  document.getElementById('open-answer-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkOpenAnswer();
-  });
+    /* ═══════════════════════════════════════════════════════════════
+       GAME INIT
+    ═══════════════════════════════════════════════════════════════ */
+    function startGame(jugadores) {
+      state = {
+        jugadores: jugadores.map((nombre, i) => ({
+          nombre: nombre || defaultNames[i],
+          color: playerColors[i],
+          emoji: playerEmojis[i],
+          posicion: 0,
+          puntos: 0,
+          rachaActual: 0
+        })),
+        turnoActual: 0,
+        juegoActivo: true,
+        sonidoActivado: state.sonidoActivado !== undefined ? state.sonidoActivado : true,
+        modalAbierto: false
+      };
+      closeModal('setup-modal');
+      renderPlayerCards();
+      renderTokens();
+      updateTurnIndicator();
+      setDiceEnabled(true);
+      saveState();
+      updateSoundUI();
+    }
 
-  // Instructions
-  document.getElementById('btn-instructivo').addEventListener('click', () => openModal('instructions-modal'));
-  document.getElementById('close-instructions').addEventListener('click', () => closeModal('instructions-modal'));
+    function restartGame() {
+      clearState();
+      state.juegoActivo = false;
+      closeModal('victory-modal');
+      closeModal('question-modal');
+      document.getElementById('dice-display').textContent = '🎲';
+      setDiceEnabled(false);
+      initSetupModal();
+      openModal('setup-modal');
+    }
 
-  // Inicio / restart
-  document.getElementById('btn-inicio').addEventListener('click', restartGame);
-  document.getElementById('btn-restart-side').addEventListener('click', restartGame);
-  document.getElementById('btn-victory-restart').addEventListener('click', restartGame);
+    /* ═══════════════════════════════════════════════════════════════
+       SOUND UI
+    ═══════════════════════════════════════════════════════════════ */
+    function updateSoundUI() {
+      const icon = document.getElementById('sound-icon');
+      if (icon) {
+        icon.className = state.sonidoActivado ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+      }
+    }
 
-  // Sound toggle
-  document.getElementById('btn-sound').addEventListener('click', () => {
-    state.sonidoActivado = !state.sonidoActivado;
-    updateSoundUI();
-    saveState();
-    showToast(state.sonidoActivado ? '🔊 Sonido activado' : '🔇 Sonido desactivado', 'info');
-  });
+    /* ═══════════════════════════════════════════════════════════════
+       RESIZE HANDLER
+    ═══════════════════════════════════════════════════════════════ */
+    let resizeTimer;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        drawMapCanvas();
+        renderCells();
+        if (state.juegoActivo) renderTokens();
+      }, 100);
+    }
 
-  // Resize
-  window.addEventListener('resize', onResize);
+    /* ═══════════════════════════════════════════════════════════════
+       EVENT LISTENERS
+    ═══════════════════════════════════════════════════════════════ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Draw map
+      drawMapCanvas();
+      renderCells();
 
-  // Try restoring saved game
-  const saved = loadState();
-  if (saved) {
-    state = saved;
-    state.modalAbierto = false;
-    renderPlayerCards();
-    renderTokens();
-    updateTurnIndicator();
-    setDiceEnabled(true);
-    updateSoundUI();
-    showToast('♻️ Partida restaurada', 'info');
-  } else {
-    initSetupModal();
-    openModal('setup-modal');
-    setDiceEnabled(false);
-  }
+      // Count buttons
+      document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedCount = parseInt(btn.dataset.count);
+          document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          buildSetupNames(selectedCount);
+        });
+      });
 
-  updateSoundUI();
-});
-</script>
+      // Start game button
+      document.getElementById('start-game-btn').addEventListener('click', () => {
+        const names = [];
+        for (let i = 0; i < selectedCount; i++) {
+          const input = document.getElementById(`pname-${i}`);
+          names.push(input ? input.value.trim() || defaultNames[i] : defaultNames[i]);
+        }
+        startGame(names);
+      });
+
+      // Bear / dice button
+      document.getElementById('bear-btn').addEventListener('click', () => {
+        if (!state.juegoActivo || state.modalAbierto) return;
+        launchDice();
+      });
+
+      // Open answer
+      document.getElementById('open-answer-submit').addEventListener('click', checkOpenAnswer);
+      document.getElementById('open-answer-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') checkOpenAnswer();
+      });
+
+      // Instructions
+      document.getElementById('btn-instructivo').addEventListener('click', () => openModal('instructions-modal'));
+      document.getElementById('close-instructions').addEventListener('click', () => closeModal('instructions-modal'));
+
+      // Inicio / restart
+      document.getElementById('btn-inicio').addEventListener('click', restartGame);
+      document.getElementById('btn-restart-side').addEventListener('click', restartGame);
+      document.getElementById('btn-victory-restart').addEventListener('click', restartGame);
+
+      // Sound toggle
+      document.getElementById('btn-sound').addEventListener('click', () => {
+        state.sonidoActivado = !state.sonidoActivado;
+        updateSoundUI();
+        saveState();
+        showToast(state.sonidoActivado ? '🔊 Sonido activado' : '🔇 Sonido desactivado', 'info');
+      });
+
+      // Resize
+      window.addEventListener('resize', onResize);
+
+      // Try restoring saved game
+      const saved = loadState();
+      if (saved) {
+        state = saved;
+        state.modalAbierto = false;
+        renderPlayerCards();
+        renderTokens();
+        updateTurnIndicator();
+        setDiceEnabled(true);
+        updateSoundUI();
+        showToast('♻️ Partida restaurada', 'info');
+      } else {
+        initSetupModal();
+        openModal('setup-modal');
+        setDiceEnabled(false);
+      }
+
+      updateSoundUI();
+    });
+
+
+  </script>
 </body>
+
 </html>
