@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Olimpiada del Pensamiento Fimeño</title>
+  <title>Pensamiento Fimeño</title>
   <link
     href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Roboto+Condensed:wght@400;700&display=swap"
     rel="stylesheet">
@@ -184,41 +184,40 @@
 ═══════════════════════════════════════════════════════════════ */
     .cell {
       position: absolute;
-      width: 52px;
-      height: 36px;
-      background: var(--cell-bg);
-      border-radius: 10px;
-      box-shadow: var(--cell-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border-radius: 50%;
+      box-shadow: none;
       z-index: 10;
       display: flex;
       align-items: center;
       justify-content: center;
       transform: translate(-50%, -50%);
-      border: 1.5px solid rgba(255, 255, 255, 0.6);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: none;
+      transition: transform 0.2s ease;
       cursor: default;
     }
 
     .cell:hover {
-      transform: translate(-50%, -50%) scale(1.05);
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transform: translate(-50%, -50%) scale(1.12);
       z-index: 11;
     }
 
     .cell-number {
-      width: 22px;
-      height: 22px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-num);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: white;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       flex-shrink: 0;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.25);
     }
 
     .cell.cat-mat .cell-number {
@@ -250,13 +249,19 @@
     }
 
     .cell.start-cell {
-      background: linear-gradient(135deg, #1a3a1a, #2c6a2c);
-      border: 2px solid #4aaa4a;
-      box-shadow: 0 0 15px rgba(74, 170, 74, 0.5), var(--cell-shadow);
+      width: 58px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #c8a83c, #f0d060, #a07820);
+      border: 2px solid #f0d060;
+      box-shadow: 0 0 18px rgba(200, 168, 60, 0.8), 0 3px 10px rgba(0, 0, 0, 0.5);
     }
 
     .cell.end-cell {
-      background: linear-gradient(135deg, #3a2800, #7a5a00);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f0d060, #c8a83c, #7a5a00);
       border: 2px solid var(--gold);
       box-shadow: 0 0 20px rgba(200, 168, 60, 0.6), var(--cell-shadow);
       animation: endPulse 2s ease-in-out infinite;
@@ -1537,38 +1542,53 @@
 
       <!-- Title -->
       <div id="board-title">
-        <h1>Olimpiada del Pensamiento Fimeño</h1>
+        <h1>Pensamiento Fimeño</h1>
       </div>
 
       <!-- Landmarks (decorative) -->
-      <div class="landmark" id="lm-edificio1" style="left:16%;top:14%">
-        <span class="landmark-icon">🏰</span>Edificio 1
+      <div class="landmark" id="lm-edificio1" style="left:13%;top:14%">
+        <span class="landmark-icon">🏛</span>Edificio 1
       </div>
-      <div class="landmark" id="lm-edificio2" style="left:42%;top:10%">
+      <div class="landmark" id="lm-edificio2" style="left:24%;top:14%">
         <span class="landmark-icon">🏛</span>Edificio 2
       </div>
-      <div class="landmark" id="lm-edificio3" style="left:62%;top:10%">
-        <span class="landmark-icon">🏯</span>Edificio 3
+      <div class="landmark" id="lm-edificio3" style="left:34%;top:14%">
+        <span class="landmark-icon">🏛</span>Edificio 3
       </div>
-      <div class="landmark" id="lm-edificio4" style="left:74%;top:48%">
-        <span class="landmark-icon">🏟</span>Edificio 4
+      <div class="landmark" id="lm-edificio4" style="left:44%;top:12%">
+        <span class="landmark-icon">🏛</span>Edificio 4
       </div>
-      <div class="landmark" id="lm-eloso" style="left:64%;top:54%">
+      <div class="landmark" id="lm-edificio5" style="left:53%;top:12%">
+        <span class="landmark-icon">🏛</span>Edificio 5
+      </div>
+      <div class="landmark" id="lm-edificio6" style="left:62%;top:14%">
+        <span class="landmark-icon">🏛</span>Edificio 6
+      </div>
+      <div class="landmark" id="lm-edificio7" style="left:70%;top:14%">
+        <span class="landmark-icon">🏛</span>Edificio 7
+      </div>
+      <div class="landmark" id="lm-edificio8" style="left:77%;top:23%">
+        <span class="landmark-icon">🏛</span>Edificio 8
+      </div>
+      <div class="landmark" id="lm-biblioteca" style="left:28%;top:50%">
+        <span class="landmark-icon">📚</span>Biblioteca
+      </div>
+      <div class="landmark" id="lm-edificio9" style="left:77%;top:34%">
+        <span class="landmark-icon">🏛</span>Edificio 9
+      </div>
+      <div class="landmark" id="lm-edificio10" style="left:74%;top:44%">
+        <span class="landmark-icon">🏛</span>Edificio 10
+      </div>
+      <div class="landmark" id="lm-edificio11" style="left:68%;top:55%">
+        <span class="landmark-icon">🏛</span>Edificio 11
+      </div>
+      <div class="landmark" id="lm-edificio12" style="left:58%;top:69%">
+        <span class="landmark-icon">🏛</span>Edificio 12
+      </div>
+      <div class="landmark" id="lm-eloso" style="left:64%;top:46%">
         <span class="landmark-icon">🐻</span>El Oso
       </div>
-      <div class="landmark" id="lm-biblioteca" style="left:28%;top:55%">
-        <span class="landmark-icon">📚</span>Edificio 9
-      </div>
-      <div class="landmark" id="lm-cafeteria" style="left:38%;top:72%">
-        <span class="landmark-icon">☕</span>Cafetería
-      </div>
-      <div class="landmark" id="lm-cidlt" style="left:58%;top:80%">
-        <span class="landmark-icon">🖥</span>Cidet
-      </div>
-      <div class="landmark" id="lm-poli" style="left:76%;top:64%">
-        <span class="landmark-icon">🎓</span>El Poli
-      </div>
-      <div class="landmark" id="lm-final" style="left:22%;top:75%">
+      <div class="landmark" id="lm-final" style="left:20%;top:73%">
         <span class="landmark-icon">🏁</span>Final
       </div>
 
@@ -1609,7 +1629,7 @@
   <!-- SETUP MODAL -->
   <div class="modal-overlay" id="setup-modal" role="dialog" aria-modal="true" aria-label="Configuración del juego">
     <div class="modal-box">
-      <div class="setup-title">⚔ Olimpiada del Pensamiento Fimeño</div>
+      <div class="setup-title">⚔ Pensamiento Fimeño</div>
       <p
         style="font-family:var(--font-body);font-size:0.8rem;color:rgba(245,230,200,0.7);text-align:center;margin-bottom:16px;">
         Selecciona el número de jugadores</p>
@@ -1644,8 +1664,26 @@
       <div class="victory-title">¡VICTORIA!</div>
       <div class="victory-name" id="victory-name"></div>
       <div class="victory-score" id="victory-score"></div>
+      <button class="ctrl-btn" id="btn-show-leaderboard"
+        style="margin-top:18px;width:100%;justify-content:center;background:#1a3a5a;border-color:#4a8aff;color:white;">
+        <i class="fas fa-trophy"></i> Ver Clasificación
+      </button>
       <button class="ctrl-btn" id="btn-victory-restart"
-        style="margin-top:18px;width:100%;justify-content:center;background:#1a5a1a;border-color:#4aaa4a;color:white;">
+        style="margin-top:10px;width:100%;justify-content:center;background:#1a5a1a;border-color:#4aaa4a;color:white;">
+        <i class="fas fa-redo"></i> Jugar de Nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD MODAL -->
+  <div class="modal-overlay" id="leaderboard-modal" role="dialog" aria-modal="true" aria-label="Clasificación">
+    <div class="modal-box" style="max-width:520px;">
+      <div
+        style="font-family:var(--font-title);font-size:1.3rem;color:var(--gold-light);text-align:center;margin-bottom:6px;text-shadow:0 0 20px rgba(200,168,60,0.5);">
+        🏆 Tabla de Clasificación</div>
+      <div id="leaderboard-list" style="margin:18px 0;display:flex;flex-direction:column;gap:10px;"></div>
+      <button class="ctrl-btn" id="btn-leaderboard-restart"
+        style="margin-top:10px;width:100%;justify-content:center;background:#1a5a1a;border-color:#4aaa4a;color:white;">
         <i class="fas fa-redo"></i> Jugar de Nuevo
       </button>
     </div>
@@ -1665,7 +1703,7 @@
           pierdes el turno.</p>
         <h4>❓ Preguntas</h4>
         <p>Al caer en una casilla de color, responde la pregunta. <b style="color:#6aff8a">Acierto:</b> +1 punto, te
-          quedas. <b style="color:#ff7070">Error:</b> retrocedes 1 casilla.</p>
+          quedas. <b style="color:#ff7070">Error:</b> te quedas en la misma casilla sin puntos.</p>
         <h4>🔥 Racha</h4>
         <p>3 aciertos consecutivos desatan una celebración especial. ¡Ponle presión al rival!</p>
         <h4>🗺 Categorías</h4>
@@ -1695,10 +1733,16 @@
 
   <script>
     /* ═══════════════════════════════════════════════════════════════
-       BANCO DE PREGUNTAS
-    ═══════════════════════════════════════════════════════════════ */
+   BANCO DE PREGUNTAS (46 preguntas)
+╔═══════════════════════════════════════════════════════════════╗
+║  Matemáticas: 9 │ Ciencias: 9 │ Arte: 9 (1 abierta)          ║
+║  Historia: 9    │ Lógica: 10   │ Total = 46                   ║
+╚═══════════════════════════════════════════════════════════════╝
+═══════════════════════════════════════════════════════════════ */
     const bancoPreguntas = [
-      // MATEMÁTICAS
+      // ──────────────────────────────────────────────────────────────
+      // MATEMÁTICAS (9 preguntas)
+      // ──────────────────────────────────────────────────────────────
       {
         id: 1, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
         pregunta: "Si un pastel se divide en 8 partes y comes 3, ¿qué fracción queda?",
@@ -1714,69 +1758,232 @@
         pregunta: "Si el 20% de un número es 40, ¿cuál es el número?",
         opciones: ["100", "150", "200", "800"], correcta: "200"
       },
-      // CIENCIAS
       {
-        id: 4, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        id: 4, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "¿Cuánto es (15 × 4) ÷ 6?",
+        opciones: ["8", "10", "12", "9"], correcta: "10"
+      },
+      {
+        id: 5, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Un triángulo tiene ángulos de 45°, 45° y 90°. ¿Cómo se llama?",
+        opciones: ["Equilátero", "Isósceles rectángulo", "Escaleno", "Acutángulo"], correcta: "Isósceles rectángulo"
+      },
+      {
+        id: 6, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Resuelve: 3(x + 2) = 21. ¿Cuánto vale x?",
+        opciones: ["5", "6", "7", "8"], correcta: "5"
+      },
+      {
+        id: 7, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Si lanzas un dado normal de 6 caras, ¿qué probabilidad hay de obtener un número par?",
+        opciones: ["1/2", "1/3", "2/3", "1/6"], correcta: "1/2"
+      },
+      {
+        id: 8, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "¿Cuál es el área de un cuadrado de lado 7 cm?",
+        opciones: ["14 cm²", "28 cm²", "49 cm²", "56 cm²"], correcta: "49 cm²"
+      },
+      {
+        id: 9, categoria: "Matemáticas", habilidad: "Analítico", tipo: "multiple",
+        pregunta: "Un tren viaja a 90 km/h. ¿Cuántos metros recorre en 1 minuto?",
+        opciones: ["900 m", "1500 m", "1200 m", "1800 m"], correcta: "1500 m"
+      },
+      // ──────────────────────────────────────────────────────────────
+      // CIENCIAS (9 preguntas)
+      // ──────────────────────────────────────────────────────────────
+      {
+        id: 10, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
         pregunta: "¿El hielo flota en el agua porque es más liviano?",
         opciones: ["Verdadero", "Falso. Es menos denso."], correcta: "Falso. Es menos denso."
       },
       {
-        id: 5, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        id: 11, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
         pregunta: "¿Qué gas absorben las plantas durante la fotosíntesis?",
         opciones: ["Oxígeno", "Nitrógeno", "Dióxido de Carbono", "Hidrógeno"], correcta: "Dióxido de Carbono"
       },
       {
-        id: 6, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        id: 12, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
         pregunta: "¿Cuál es el planeta conocido como el 'Planeta Rojo'?",
         opciones: ["Venus", "Júpiter", "Marte", "Saturno"], correcta: "Marte"
       },
-      // ARTE
       {
-        id: 7, categoria: "Arte", habilidad: "Creativo", tipo: "abierta",
+        id: 13, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Qué órgano del cuerpo humano bombea la sangre?",
+        opciones: ["Cerebro", "Pulmón", "Corazón", "Hígado"], correcta: "Corazón"
+      },
+      {
+        id: 14, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Cuál es el metal líquido a temperatura ambiente?",
+        opciones: ["Plomo", "Mercurio", "Estaño", "Aluminio"], correcta: "Mercurio"
+      },
+      {
+        id: 15, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "La capa de ozono nos protege principalmente de:",
+        opciones: ["Rayos X", "Rayos UV", "Rayos Gamma", "Microondas"], correcta: "Rayos UV"
+      },
+      {
+        id: 16, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Qué animal es conocido por cambiar de color para camuflarse?",
+        opciones: ["Camaleón", "Serpiente", "Rana", "Pulpo"], correcta: "Camaleón"
+      },
+      {
+        id: 17, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "¿Cuál es el planeta más grande del Sistema Solar?",
+        opciones: ["Saturno", "Júpiter", "Urano", "Neptuno"], correcta: "Júpiter"
+      },
+      {
+        id: 18, categoria: "Ciencias", habilidad: "Crítico", tipo: "multiple",
+        pregunta: "El proceso por el cual las plantas pierden agua a través de sus hojas se llama:",
+        opciones: ["Transpiración", "Fotosíntesis", "Condensación", "Evaporación"], correcta: "Transpiración"
+      },
+      // ──────────────────────────────────────────────────────────────
+      // ARTE (9 preguntas: 8 múltiple + 1 abierta)
+      // ──────────────────────────────────────────────────────────────
+      {
+        id: 19, categoria: "Arte", habilidad: "Creativo", tipo: "abierta",
         pregunta: "Nombra una canción famosa que tenga un color en su título (Ej: 'Yellow' de Coldplay).",
         correctas: ["yellow", "blue", "red", "black", "white", "purple", "green", "amarillo", "rojo", "azul", "negro", "blanco", "verde", "pink", "rosa", "grey", "gray", "gris", "golden", "dorado", "silver", "plata", "orange", "naranja", "violet", "violeta", "indigo", "índigo"]
       },
       {
-        id: 8, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        id: 20, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
         pregunta: "¿Quién pintó la Mona Lisa?",
         opciones: ["Van Gogh", "Picasso", "Da Vinci", "Dalí"], correcta: "Da Vinci"
       },
       {
-        id: 9, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        id: 21, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
         pregunta: "¿Cómo se llama el arte japonés de doblar papel?",
         opciones: ["Ikebana", "Haiku", "Origami", "Bonsái"], correcta: "Origami"
       },
-      // HISTORIA
       {
-        id: 10, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        id: 22, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Quién pintó 'La noche estrellada'?",
+        opciones: ["Picasso", "Van Gogh", "Monet", "Rembrandt"], correcta: "Van Gogh"
+      },
+      {
+        id: 23, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Cuál de estos es un estilo de danza clásica originario de España?",
+        opciones: ["Tango", "Salsa", "Flamenco", "Ballet"], correcta: "Flamenco"
+      },
+      {
+        id: 24, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Quién escribió 'Romeo y Julieta'?",
+        opciones: ["Charles Dickens", "Mark Twain", "William Shakespeare", "Jane Austen"], correcta: "William Shakespeare"
+      },
+      {
+        id: 25, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "En música, ¿qué significa 'piano'?",
+        opciones: ["Fuerte", "Suave", "Rápido", "Lento"], correcta: "Suave"
+      },
+      {
+        id: 26, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Cuál de los siguientes es un instrumento de viento?",
+        opciones: ["Violín", "Guitarra", "Flauta", "Tambor"], correcta: "Flauta"
+      },
+      {
+        id: 27, categoria: "Arte", habilidad: "Creativo", tipo: "multiple",
+        pregunta: "¿Cuáles son los tres colores primarios en pintura?",
+        opciones: ["Rojo, verde, azul", "Amarillo, cian, magenta", "Rojo, amarillo, azul", "Verde, naranja, morado"], correcta: "Rojo, amarillo, azul"
+      },
+      // ──────────────────────────────────────────────────────────────
+      // HISTORIA (9 preguntas)
+      // ──────────────────────────────────────────────────────────────
+      {
+        id: 28, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
         pregunta: "¿En qué siglo ocurrió la Revolución Mexicana?",
         opciones: ["Siglo XVIII", "Siglo XIX", "Siglo XX", "Siglo XXI"], correcta: "Siglo XX"
       },
       {
-        id: 11, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        id: 29, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
         pregunta: "¿En qué año cayó el Muro de Berlín?",
         opciones: ["1989", "1991", "1985", "1995"], correcta: "1989"
       },
       {
-        id: 12, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        id: 30, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
         pregunta: "¿Quién descubrió América en 1492?",
         opciones: ["Magallanes", "Cortés", "Colón", "Pizarro"], correcta: "Colón"
       },
-      // LÓGICA
       {
-        id: 13, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        id: 31, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿Quién fue el líder de la Revolución Rusa de 1917?",
+        opciones: ["Stalin", "Trotsky", "Lenin", "Kerensky"], correcta: "Lenin"
+      },
+      {
+        id: 32, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿En qué año comenzó la Segunda Guerra Mundial?",
+        opciones: ["1935", "1939", "1940", "1941"], correcta: "1939"
+      },
+      {
+        id: 33, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "El Imperio Azteca tenía su capital en:",
+        opciones: ["Cuzco", "Tenochtitlán", "Teotihuacán", "Chichén Itzá"], correcta: "Tenochtitlán"
+      },
+      {
+        id: 34, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿Quién escribió 'El Quijote'?",
+        opciones: ["Garcilaso de la Vega", "Lope de Vega", "Miguel de Cervantes", "Francisco de Quevedo"], correcta: "Miguel de Cervantes"
+      },
+      {
+        id: 35, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿Qué presidente mexicano expropió el petróleo en 1938?",
+        opciones: ["Ávila Camacho", "Cárdenas", "Obregón", "Calles"], correcta: "Cárdenas"
+      },
+      {
+        id: 36, categoria: "Historia", habilidad: "Práctico", tipo: "multiple",
+        pregunta: "¿Quién fue el primer hombre en pisar la Luna?",
+        opciones: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"], correcta: "Neil Armstrong"
+      },
+      // ──────────────────────────────────────────────────────────────
+      // LÓGICA (10 preguntas)
+      // ──────────────────────────────────────────────────────────────
+      {
+        id: 37, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
         pregunta: "Pedro es más alto que Juan, y Juan es más alto que Luis. ¿Quién es el más bajo?",
         opciones: ["Pedro", "Juan", "Luis", "Ninguno"], correcta: "Luis"
       },
       {
-        id: 14, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        id: 38, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
         pregunta: "Algunos meses tienen 31 días, otros 30. ¿Cuántos tienen 28 días?",
         opciones: ["1", "Todos", "Ninguno", "2"], correcta: "Todos"
       },
       {
-        id: 15, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        id: 39, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
         pregunta: "¿Qué pesa más, un kilo de plumas o un kilo de plomo?",
         opciones: ["Las plumas", "El plomo", "Pesan lo mismo", "Depende del tamaño"], correcta: "Pesan lo mismo"
+      },
+      {
+        id: 40, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Si un tren tarda 10 segundos en pasar completamente un poste, y 50 segundos en pasar un puente de 400 metros, ¿cuál es la longitud del tren?",
+        opciones: ["80 m", "100 m", "120 m", "150 m"], correcta: "100 m"
+      },
+      {
+        id: 41, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Si sumas la edad de Juan y la de su hermana obtienes 30. Juan tiene el doble de la edad que tenía su hermana cuando él tenía la edad que ella tiene ahora. ¿Qué edad tiene Juan?",
+        opciones: ["16", "18", "20", "22"], correcta: "18"
+      },
+      {
+        id: 42, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "En una carrera, si adelantas al segundo lugar, ¿en qué posición quedas?",
+        opciones: ["Primero", "Segundo", "Tercero", "Último"], correcta: "Segundo"
+      },
+      {
+        id: 43, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Un murciélago y una pelota cuestan $1.10 en total. El murciélago cuesta $1 más que la pelota. ¿Cuánto cuesta la pelota?",
+        opciones: ["$0.05", "$0.10", "$0.15", "$0.20"], correcta: "$0.05"
+      },
+      {
+        id: 44, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "¿Cuál de los siguientes no es un número primo?",
+        opciones: ["13", "17", "21", "23"], correcta: "21"
+      },
+      {
+        id: 45, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Si A es el padre de B, pero B no es hijo de A. ¿Cómo es posible?",
+        opciones: ["B es la madre", "B es la hija", "B es el abuelo", "Es adoptado"], correcta: "B es la hija"
+      },
+      {
+        id: 46, categoria: "Lógica", habilidad: "Metacognición", tipo: "multiple",
+        pregunta: "Dos personas juegan a las cartas. Ambas pierden 5 partidas, pero ninguna gana ninguna. ¿Cómo es posible?",
+        opciones: ["Jugaban contra otros", "No jugaban entre sí", "Eran las mismas partidas", "Empataron todas"], correcta: "No jugaban entre sí"
       }
     ];
 
@@ -2569,9 +2776,9 @@
         }
       } else {
         p.rachaActual = 0;
-        feedback.textContent = '❌ Incorrecto. Retrocedes 1 casilla.';
+        feedback.textContent = '❌ Incorrecto. ¡Te quedas en la misma casilla!';
         feedback.className = 'modal-feedback feedback-wrong';
-        showToast('¡Error! Retrocede 1 casilla.', 'error');
+        showToast('¡Error! Te quedas en tu casilla.', 'error');
         playError();
         // Shake token
         const token = document.getElementById(`token-${state.turnoActual}`);
@@ -2579,14 +2786,6 @@
           token.classList.add('shake');
           setTimeout(() => token.classList.remove('shake'), 500);
         }
-        // Retreat after 1s
-        setTimeout(async () => {
-          const newPos = Math.max(0, p.posicion - 1);
-          const oldPos = p.posicion;
-          p.posicion = newPos;
-          await animateMove(state.turnoActual, oldPos, newPos);
-          renderPlayerCards();
-        }, 800);
       }
 
       saveState();
@@ -2629,6 +2828,47 @@
       playSuccess();
       setTimeout(() => fireConfetti(), 800);
       saveState();
+    }
+
+    function showLeaderboard() {
+      closeModal('victory-modal');
+      const sorted = [...state.jugadores].sort((a, b) => b.puntos - a.puntos);
+      const medals = ['🥇', '🥈', '🥉', '🏅'];
+      const posLabels = ['1° Lugar', '2° Lugar', '3° Lugar', '4° Lugar'];
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = '';
+      sorted.forEach((p, idx) => {
+        const isWinner = idx === 0;
+        const card = document.createElement('div');
+        card.style.cssText = `
+          display:flex;align-items:center;gap:14px;
+          background:${isWinner ? 'rgba(200,168,60,0.18)' : 'rgba(255,255,255,0.06)'};
+          border:${isWinner ? '2px solid var(--gold)' : '1px solid rgba(255,255,255,0.12)'};
+          border-radius:12px;padding:12px 16px;
+          box-shadow:${isWinner ? '0 0 18px rgba(200,168,60,0.3)' : 'none'};
+          transition:all 0.3s;
+        `;
+        const maxPts = sorted[0].puntos || 1;
+        const barPct = Math.round((p.puntos / maxPts) * 100);
+        card.innerHTML = `
+          <div style="font-size:1.8rem;min-width:36px;text-align:center">${medals[idx] || '🏅'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 35%, ${lighten(p.color)},${p.color});display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid rgba(255,255,255,0.4)">${p.emoji}</div>
+              <span style="font-family:var(--font-num);font-size:0.95rem;font-weight:700;color:${isWinner ? 'var(--gold-light)' : 'var(--white)'}">${p.nombre}</span>
+              ${isWinner ? '<span style="font-family:var(--font-num);font-size:0.7rem;background:var(--gold);color:#1a1a00;padding:2px 8px;border-radius:10px;font-weight:900">GANADOR</span>' : ''}
+            </div>
+            <div style="background:rgba(255,255,255,0.1);border-radius:4px;height:6px;overflow:hidden">
+              <div style="height:100%;width:${barPct}%;background:${isWinner ? 'linear-gradient(90deg,var(--gold),var(--gold-light))' : p.color};border-radius:4px;transition:width 1s ease"></div>
+            </div>
+            <div style="font-family:var(--font-num);font-size:0.65rem;color:rgba(255,255,255,0.45);margin-top:3px">${posLabels[idx]} · Casilla ${p.posicion + 1}/${camino.length}</div>
+          </div>
+          <div style="font-family:var(--font-num);font-weight:900;font-size:1.5rem;color:${isWinner ? 'var(--gold-light)' : 'rgba(255,255,255,0.7)'};text-shadow:${isWinner ? '0 0 12px rgba(200,168,60,0.6)' : 'none'}">${p.puntos}<span style="font-size:0.6rem;font-weight:400;opacity:0.6"> pts</span></div>
+        `;
+        list.appendChild(card);
+      });
+      openModal('leaderboard-modal');
+      fireConfetti();
     }
 
     function fireConfetti() {
@@ -2922,29 +3162,9 @@
       };
     })();
 
-    // Music button handler
-    document.addEventListener('DOMContentLoaded', () => {
-      const musicBtn = document.getElementById('music-btn');
-      const musicLabel = document.getElementById('music-label');
-      let musicOn = false;
-
-      if (musicBtn) {
-        musicBtn.addEventListener('click', () => {
-          musicOn = !musicOn;
-          if (musicOn) {
-            AmbientMusic.start();
-            musicBtn.classList.add('playing');
-            musicLabel.innerHTML = '<span class="music-note-anim">♪</span> Pausar';
-          } else {
-            AmbientMusic.stop();
-            musicBtn.classList.remove('playing');
-            musicLabel.textContent = 'Música';
-          }
-        });
-      }
-    });
-
-
+    /* ═══════════════════════════════════════════════════════════════
+       STREAK CELEBRATION
+    ═══════════════════════════════════════════════════════════════ */
     function triggerStreakCelebration() {
       const banner = document.getElementById('streak-banner');
       const p = state.jugadores[state.turnoActual];
@@ -2964,7 +3184,6 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.remove('open');
-      // Only clear modalAbierto if no other modal is open
       const anyOpen = document.querySelectorAll('.modal-overlay.open').length > 0;
       state.modalAbierto = anyOpen;
     }
@@ -3029,10 +3248,10 @@
         const wrap = document.createElement('label');
         wrap.className = 'player-name-input';
         wrap.innerHTML = `
-      <div class="player-color-dot" style="background:${playerColors[i]}"></div>
-      <input type="text" placeholder="${defaultNames[i]}" maxlength="16" id="pname-${i}">
-      <span style="font-size:1rem">${playerEmojis[i]}</span>
-    `;
+          <div class="player-color-dot" style="background:${playerColors[i]}"></div>
+          <input type="text" placeholder="${defaultNames[i]}" maxlength="16" id="pname-${i}">
+          <span style="font-size:1rem">${playerEmojis[i]}</span>
+        `;
         grid.appendChild(wrap);
       }
     }
@@ -3076,6 +3295,7 @@
       clearState();
       state.juegoActivo = false;
       closeModal('victory-modal');
+      closeModal('leaderboard-modal');
       closeModal('question-modal');
       document.getElementById('dice-display').textContent = '🎲';
       setDiceEnabled(false);
@@ -3109,19 +3329,20 @@
     /* ═══════════════════════════════════════════════════════════════
        EVENT LISTENERS
     ═══════════════════════════════════════════════════════════════ */
-    document.addEventListener('DOMContentLoaded', () => {
+    function initAll() {
       // Draw map
       drawMapCanvas();
       renderCells();
 
-      // Count buttons
-      document.querySelectorAll('.count-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+      // Count buttons — use event delegation to avoid timing issues
+      document.getElementById('setup-modal').addEventListener('click', (e) => {
+        const btn = e.target.closest('.count-btn');
+        if (btn) {
           selectedCount = parseInt(btn.dataset.count);
           document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
           buildSetupNames(selectedCount);
-        });
+        }
       });
 
       // Start game button
@@ -3154,6 +3375,8 @@
       document.getElementById('btn-inicio').addEventListener('click', restartGame);
       document.getElementById('btn-restart-side').addEventListener('click', restartGame);
       document.getElementById('btn-victory-restart').addEventListener('click', restartGame);
+      document.getElementById('btn-leaderboard-restart').addEventListener('click', restartGame);
+      document.getElementById('btn-show-leaderboard').addEventListener('click', showLeaderboard);
 
       // Sound toggle
       document.getElementById('btn-sound').addEventListener('click', () => {
@@ -3162,6 +3385,42 @@
         saveState();
         showToast(state.sonidoActivado ? '🔊 Sonido activado' : '🔇 Sonido desactivado', 'info');
       });
+
+      // Music button
+      const musicBtn = document.getElementById('music-btn');
+      const musicLabel = document.getElementById('music-label');
+      let musicOn = false;
+      let musicStarted = false;
+
+      function tryAutoStartMusic() {
+        if (!musicStarted) {
+          musicStarted = true;
+          musicOn = true;
+          AmbientMusic.start();
+          musicBtn.classList.add('playing');
+          musicLabel.innerHTML = '<span class="music-note-anim">♪</span> Pausar';
+        }
+        document.removeEventListener('click', tryAutoStartMusic);
+        document.removeEventListener('keydown', tryAutoStartMusic);
+      }
+      document.addEventListener('click', tryAutoStartMusic);
+      document.addEventListener('keydown', tryAutoStartMusic);
+
+      if (musicBtn) {
+        musicBtn.addEventListener('click', () => {
+          musicStarted = true;
+          musicOn = !musicOn;
+          if (musicOn) {
+            AmbientMusic.start();
+            musicBtn.classList.add('playing');
+            musicLabel.innerHTML = '<span class="music-note-anim">♪</span> Pausar';
+          } else {
+            AmbientMusic.stop();
+            musicBtn.classList.remove('playing');
+            musicLabel.textContent = 'Música';
+          }
+        });
+      }
 
       // Resize
       window.addEventListener('resize', onResize);
@@ -3184,7 +3443,13 @@
       }
 
       updateSoundUI();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
 
 
   </script>
